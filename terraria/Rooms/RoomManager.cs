@@ -456,9 +456,19 @@ public class RoomManager
         UpdateBlocks(gameTime);
 
         ProcessWorldCollisions(_player);
+        bool bossAlive = false;
         foreach(IBoss b in _bossManager.Bosses)
         {
+            if(b.Health.CurrentHealth > 0)
+            {
+                bossAlive = true;
+            }
             ProcessWorldCollisions(b);
+        }
+
+        if (!bossAlive)
+        {
+            NextRoom();
         }
 
 
