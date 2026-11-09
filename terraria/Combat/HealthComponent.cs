@@ -11,7 +11,7 @@ public class HealthComponent
     private float _invulnerabilityTimer;
 
     public StatusEffectComponent Effects { get; } = new StatusEffectComponent();
-    public int CurrentHealth { get; private set; }
+    public int CurrentHealth { get; set; }
     public int MaxHealth { get; }
     public bool IsDead { get; private set; }
     public bool IsInvulnerable { get; set; }
