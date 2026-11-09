@@ -51,6 +51,7 @@ public class TriggerKey
         DasTimeMs = dasTimeMs;
     }
 
+
     //gamepad constructor
     public TriggerKey(Buttons gamePadButton, bool useDAS = false, double dasTimeMs = 0.0)
     {

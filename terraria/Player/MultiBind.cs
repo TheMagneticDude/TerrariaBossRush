@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
+
 using MonoGameLibrary.Input;
 
 namespace terraria.Players;
@@ -7,6 +8,8 @@ namespace terraria.Players;
 public class MultiBind
 {
     private List<TriggerKey> _triggers;
+
+    
 
     // returns true if ANY key in this group is currently held down
     public bool IsPressed
@@ -59,6 +62,7 @@ public class MultiBind
 
     public void Update(GameTime gameTime, InputManager inputs, float dasDelay)
     {
+        
         for (int i = 0; i < _triggers.Count; i++)
         {
             var key = _triggers[i];

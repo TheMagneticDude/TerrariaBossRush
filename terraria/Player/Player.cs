@@ -68,7 +68,6 @@ public class Player : IPlayer
     private bool _isTouchingHoney;
 
     private bool _facingRight = true;
-    private bool _voidFloor = true;
 
     public bool FacingRight
     {
@@ -127,10 +126,7 @@ public class Player : IPlayer
             DEBUG.ShowHitboxes = !DEBUG.ShowHitboxes;
         }
 
-        if (Input.IsPressed(KeyAction.TriggerDebug) && Input.IsNewPress(KeyAction.VoidFloor))
-        {
-            _voidFloor = !_voidFloor;
-        }
+
         
     }
 
@@ -169,6 +165,16 @@ public class Player : IPlayer
 
             _hotbar.SelectSlot(slot, this);
             break;
+        }
+
+        if (Input.IsNewPress(KeyAction.hotbarScrollLeft))
+        {
+            _hotbar.SelectSlot(_hotbar.SelectedSlot - 1, this);
+        }
+
+        if (Input.IsNewPress(KeyAction.hotbarScrollRight))
+        {
+            _hotbar.SelectSlot(_hotbar.SelectedSlot + 1, this);
         }
 
         if (Input.IsNewPress(KeyAction.UseItem))

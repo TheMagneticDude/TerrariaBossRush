@@ -45,14 +45,19 @@ public class PlayerHotbar
 
     public void SelectSlot(int slot, IPlayer player)
     {
-        if (slot < 0 || slot >= _slots.Length)
+        if (slot < 0)
         {
-            return;
+            slot = _slots.Length - 1;
+        }
+        if(slot >= _slots.Length)
+        {
+            slot = 0;
         }
 
         SelectedSlot = slot;
         _slots[slot].Select(player);
     }
+
 
     public void Update(GameTime gameTime, IPlayer player)
     {
