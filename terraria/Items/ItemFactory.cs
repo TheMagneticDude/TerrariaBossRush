@@ -38,19 +38,8 @@ public class ItemFactory
     {
         return new HealthPotion(_healthPotAtlas);
     }
-
     public RecallPotion CreateRecallPot()
     {
         return new RecallPotion(_recallPotAtlas);
-    }
-
-    //for item demo
-    public Sprite CreateHealthPotSprite()
-    {
-        return _healthPotAtlas.CreateSprite("healthPot");
-    }
-    public Sprite CreateRecallPotSprite()
-    {
-        return _recallPotAtlas.CreateSprite("recallPotion");
     }
 }

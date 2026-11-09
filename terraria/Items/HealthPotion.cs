@@ -27,7 +27,6 @@ public class HealthPotion : IItem
         ArgumentNullException.ThrowIfNull(atlas);
         _sprite = atlas.CreateSprite("healthPotion");
         _sprite.CenterOrigin();
-        //_sprite.Scale = new Vector2(0.85f, 0.85f);
         IsActive = false;
     }
 
@@ -35,7 +34,7 @@ public class HealthPotion : IItem
     {
         ArgumentNullException.ThrowIfNull(player);
         
-        player.Heal(25);
+        player.Heal(30);
 
         IsActive = true;
         _timer = DisplayDuration;

@@ -40,6 +40,7 @@ public class Game1 : Core
     private List<Texture2D> _backgroundTextures;
     private Rectangle _screenRectangle;
 
+    private UIManager _uiManager;
     private Texture2D _statusEffectPixel;
     private StatusEffectVisuals _statusEffectVisuals;
     private HotbarUI _hotbarUI;
@@ -127,7 +128,7 @@ public class Game1 : Core
             Content.Load<Texture2D>("Background/Forestbackground"),
         ];
 
-        _hotbarUI = new HotbarUI();
+        _uiManager = new UIManager(Content);
 
         _combatManager = new CombatManager(_projectileManager);
         _roomManager.RoomLoaded += _combatManager.Clear;
@@ -159,9 +160,6 @@ public class Game1 : Core
         _combatManager.Update(gameTime, _player1,_bossManager.Bosses, _roomManager.WorldMesh);
 
         _worldHandler.Update(_player1.Position);
-
-
-
 
         //exit handler
         if (_p1Input.IsNewPress(KeyAction.Exit))
@@ -203,12 +201,7 @@ public class Game1 : Core
         samplerState: SamplerState.PointClamp
         );
 
-        _hotbarUI.Draw(SpriteBatch, _player1.Hotbar);
-
-        if (_player1.IsDead)
-        {
-            DeathOverlay.Draw(SpriteBatch, blankTexture);
-        }
+        _uiManager.Draw(SpriteBatch, _player1);
 
         SpriteBatch.End();
 
