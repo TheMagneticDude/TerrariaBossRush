@@ -13,7 +13,7 @@ namespace terraria.Blocks;
 
 public class SpecialBlock: IBlock
 {
-    public Vector2 Location { get; set; }
+    public Vector2 Position { get; set; }
 
     public Sprite TheSprite { get; set; }
 
@@ -22,12 +22,12 @@ public class SpecialBlock: IBlock
 
     public void Update(GameTime gameTime)
     {
-        Hitbox.Update(Location);
+        Hitbox.Update(Position);
     }
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        TheSprite.Draw(spriteBatch, Location);
+        TheSprite.Draw(spriteBatch, Position);
         Hitbox.DrawDebug(spriteBatch);
     }
 
@@ -36,11 +36,11 @@ public class SpecialBlock: IBlock
         ArgumentNullException.ThrowIfNull(sprite);
 
         this.TheSprite = sprite;
-        this.Location = location;
+        this.Position = location;
         MovementEffect = effectType;
 
         Hitbox = new RectangularCollider(
-        Location,
+        Position,
         sprite.Width,
         sprite.Height
         );

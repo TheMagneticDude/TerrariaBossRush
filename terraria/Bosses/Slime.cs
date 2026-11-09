@@ -6,15 +6,17 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary.Graphics;
+using terraria.Entity;
 using static terraria.Constants;
+
 
 
 namespace terraria.Bosses;
 
 public class Slime: IBoss
 {
-    public HealthComponent Health { get; } = new(50, 0f, invulnerabilityDuration: 0f);
-    public int ContactDamage => 10;
+    public HealthComponent Health { get; } = new(TerrariaStats.BlueSlimeHealth, invulnerabilityDuration: 0f);
+    public int ContactDamage => TerrariaStats.BlueSlimeContact;
     private readonly RotatedRectangleCollider _hitbox = new(Vector2.Zero, 1f, 1f);
 
     public Vector2 Position { get; set; }
@@ -23,6 +25,7 @@ public class Slime: IBoss
     public bool IsGrounded { get;  set; }
     public Vector2 TargetPos {get;set;}
     public Color Color {get;set;}
+    public IEntity Target { get; set; }
 
     public ICollider Hitbox
     {
@@ -50,7 +53,7 @@ public class Slime: IBoss
     
 
     
-    public Slime(AnimatedSprite sprite, TextureAtlas atlas)
+    public Slime(AnimatedSprite sprite, TextureAtlas atlas, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -58,11 +61,12 @@ public class Slime: IBoss
         Drag = new Vector2(2f,0f);
         Velocity = new Vector2(0, 0);
         Color = Color.White;
+        Target = target;
 
         _sprite.CenterOrigin();
     }
 
-    public Slime(AnimatedSprite sprite, TextureAtlas atlas, Color c)
+    public Slime(AnimatedSprite sprite, TextureAtlas atlas, Color c, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -70,7 +74,7 @@ public class Slime: IBoss
         Drag = new Vector2(2f,0f);
         Velocity = new Vector2(0, 0);
         Color = c;
-
+        Target = target;
         _sprite.CenterOrigin();
     }
 
@@ -84,13 +88,16 @@ public class Slime: IBoss
         _sprite.Animation = _atlas.GetAnimation(animationName);
     }
 
-    public void Update(GameTime gameTime, Vector2 PlayerPos)
+    public void Update(GameTime gameTime)
     {
         ArgumentNullException.ThrowIfNull(gameTime);
-
         if (Health.IsDead) return;
         Health.Update(gameTime);
-        TargetPos = PlayerPos;
+        if (Health.IsDead) return;
+        if (Target != null)
+        {
+            TargetPos = Target.Position;
+        }
         _sprite.Update(gameTime);
         ApplyPhysics();
         HandleMovement();
@@ -175,7 +182,7 @@ public class Slime: IBoss
     {
         if (Health.IsDead) return;
         _sprite.CenterOrigin();
-        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, Color);
+        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, Health.Effects.Tint(Color));
         Hitbox.DrawDebug(spriteBatch);
     }
 }

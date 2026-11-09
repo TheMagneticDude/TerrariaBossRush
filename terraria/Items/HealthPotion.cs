@@ -73,11 +73,11 @@ public class HealthPotion : IItem
         
         if (player.FacingRight)
         {
-            _potPosition = player.Location + new Vector2(26, 22);
+            _potPosition = player.Position + new Vector2(26, 22);
         }
         else
         {
-            _potPosition = player.Location + new Vector2(-2, 22);
+            _potPosition = player.Position + new Vector2(-2, 22);
         }
         _sprite.Draw(spriteBatch, _potPosition);
     }

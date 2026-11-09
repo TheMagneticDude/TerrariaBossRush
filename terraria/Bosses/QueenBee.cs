@@ -6,16 +6,17 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary.Graphics;
 using terraria.Bosses.States;
+using terraria.Entity;
 using static terraria.Constants;
 //temp
 using MonoGameLibrary.Input;
 namespace terraria.Bosses;
 
 
-public class QueenBee: IBoss
+public class QueenBee : IBoss
 {
-    public HealthComponent Health { get; } = new(1200, 0f, invulnerabilityDuration: 0f);
-    public int ContactDamage => 20;
+    public HealthComponent Health { get; } = new(TerrariaStats.QueenBeeHealth, invulnerabilityDuration: 0f);
+    public int ContactDamage => TerrariaStats.QueenBeeContact;
     private readonly RotatedRectangleCollider _hitbox = new(Vector2.Zero, 1f, 1f);
 
     public Vector2 Position { get; set; }
@@ -23,6 +24,7 @@ public class QueenBee: IBoss
     public Vector2 Acceleration {get; set;}
     public Vector2 JerkDamping {get; set;}//drag force on acceleration
     public Vector2 Drag {get; set;}
+    public IEntity Target { get; set; }
     public Vector2 TargetPos {get;set;}
     public ICollider Hitbox
     {
@@ -52,7 +54,7 @@ public class QueenBee: IBoss
         _state.Enter();
     }
 
-    public QueenBee(AnimatedSprite sprite, TextureAtlas atlas)
+    public QueenBee(AnimatedSprite sprite, TextureAtlas atlas, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -60,6 +62,7 @@ public class QueenBee: IBoss
         Velocity = new Vector2(0, 0); 
         Drag = new Vector2(0.02f,0.02f);//constantly subtract or add from velocity towards 0 (acceleration vector acting against direction of movement)
         JerkDamping = new Vector2(0f,0f);
+        Target = target;
         ChangeState(new QueenBeeIdleState(this));
 
         _sprite.CenterOrigin();
@@ -70,11 +73,15 @@ public class QueenBee: IBoss
         _sprite.Animation = _atlas.GetAnimation(animationName);
     }
 
-    public void Update(GameTime gameTime, Vector2 PlayerPos)
+    public void Update(GameTime gameTime)
     {
         if (Health.IsDead) return;
         Health.Update(gameTime);
-        TargetPos = PlayerPos;
+        if (Health.IsDead) return;
+        if (Target != null)
+        {
+            TargetPos = Target.Position;
+        }
         _state.Update(gameTime);
         _sprite.Update(gameTime);
 
@@ -154,7 +161,7 @@ public class QueenBee: IBoss
         if (Health.IsDead) return;
         _sprite.CenterOrigin();
         SpriteEffects effect = _facingRight ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, _sprite.Color, effect);
+        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, Health.Effects.Tint(_sprite.Color), effect);
         Hitbox.DrawDebug(spriteBatch);
     }
 }

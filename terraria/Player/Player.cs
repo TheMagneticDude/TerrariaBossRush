@@ -43,10 +43,10 @@ public class Player : IPlayer
 
     
 
-    public Vector2 Location { get; set; }
+    public Vector2 Position { get; set; }
     public Vector2 Velocity { get; set; }
 
-    public CapsuleCollider Hitbox {get; set;}
+    public ICollider Hitbox {get; set;}
     public ICollider SpecialHitbox {get;set;}
 
     internal AnimatedSprite Sprite { get; private set; }
@@ -77,18 +77,20 @@ public class Player : IPlayer
 
     // Weapon stuff.
     private IWeapon _equippedWeapon;
-    private readonly HealthComponent _health = new HealthComponent(100, slowDuration: 0.75f);
+    private readonly HealthComponent _health = new HealthComponent(TerrariaStats.PlayerHealth);
 
     public int CurrentHealth => _health.CurrentHealth;
     public int MaxHealth => _health.MaxHealth;
     public bool IsDead => _health.IsDead;
-    public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar)
+    public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     {
+        ArgumentNullException.ThrowIfNull(input);
         Sprite = sprite;
         _atlas = atlas;
         _hotbar = hotbar;
+        Input = input;
 
-        Location = new Vector2(400, 500);
+        Position = new Vector2(400, 500);
         Velocity = new Vector2(0, 0);
 
         // State machine init.
@@ -105,13 +107,13 @@ public class Player : IPlayer
         _hotbar.SelectSlot(0, this);
 
         Hitbox = new CapsuleCollider(
-        Location,
+        Position,
         Sprite.Width/2f,
         MathF.Max(0f, Sprite.Height - Sprite.Width)
         );
 
         SpecialHitbox = new RectangularCollider(
-        Location,
+        Position,
         Hitbox.BoundingBox.Width,
         Hitbox.BoundingBox.Height + 1f
         );
@@ -158,25 +160,15 @@ public class Player : IPlayer
     }
     private void HandleHotbarInput()
     {
-        if (Input.IsNewPress(KeyAction.SelectSlot1))
+        for (int slot = 0; slot < Math.Min(10, _hotbar.Count); slot++)
         {
-            _hotbar.SelectSlot(0, this);
-        }
-        else if (Input.IsNewPress(KeyAction.SelectSlot2))
-        {
-            _hotbar.SelectSlot(1, this);
-        }
-        else if (Input.IsNewPress(KeyAction.SelectSlot3))
-        {
-            _hotbar.SelectSlot(2, this);
-        }
-        else if (Input.IsNewPress(KeyAction.SelectSlot4))
-        {
-            _hotbar.SelectSlot(3, this);
-        }
-        else if (Input.IsNewPress(KeyAction.SelectSlot5))
-        {
-            _hotbar.SelectSlot(4, this);
+            if (!Input.IsNewPress((KeyAction)((int)KeyAction.SelectSlot1 + slot)))
+            {
+                continue;
+            }
+
+            _hotbar.SelectSlot(slot, this);
+            break;
         }
 
         if (Input.IsNewPress(KeyAction.UseItem))
@@ -184,16 +176,12 @@ public class Player : IPlayer
             _hotbar.UseSelected(this);
         }
     }
+    
 
-    public void Update(GameTime gameTime, PlayerInput input)
+    public void Update(GameTime gameTime)
     {
-        
-
-
         ArgumentNullException.ThrowIfNull(gameTime);
-        ArgumentNullException.ThrowIfNull(input);
-        Input = input;
-        // Input.Update(gameTime);
+
         _health.Update(gameTime);
 
         if (Input.IsNewPress(KeyAction.Reset))
@@ -215,12 +203,12 @@ public class Player : IPlayer
         HandleHotbarInput();
         HandleToggleDebugInput();
 
-        Hitbox.Update(Location);
-        SpecialHitbox.Update(Location);
+        Hitbox.Update(Position);
+        SpecialHitbox.Update(Position);
 
         if (_equippedWeapon != null && Input.IsNewPress(KeyAction.Attack))
         {
-            _equippedWeapon.Attack(Location, _facingRight, Input.GetCursorPos());
+            _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
             _stateMachine.ChangeState(PlayerState.UseItem);
         }
 
@@ -235,33 +223,18 @@ public class Player : IPlayer
 
         ApplyPhysics();
 
-        Hitbox.Update(Location);
-        SpecialHitbox.Update(Location);
+        Hitbox.Update(Position);
+        SpecialHitbox.Update(Position);
 
         _stateMachine.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         // Movement states can change facing; use the same final pose as Draw.
-        _equippedWeapon?.UpdateHitbox(Location, _facingRight);
+        _equippedWeapon?.UpdateHitbox(Position, _facingRight);
         Sprite.Update(gameTime);
     }
 
     private void ApplyPhysics()
     {
         Velocity = new Vector2(Velocity.X, Velocity.Y + Gravity);
-        // RoomManager moves the player and resolves world collisions once per tick.
-        // if (_voidFloor)
-        // {
-        //     if (Location.Y >= GroundLevel)
-        //     {
-        //         Location = new Vector2(Location.X, GroundLevel);
-        //         Velocity = new Vector2(Velocity.X, 0f);
-        //         IsGrounded = true;
-        //     }
-        //     else
-        //     {
-        //         IsGrounded = false;
-        //     }
-        // }
-        
     }
 
 
@@ -298,17 +271,14 @@ public class Player : IPlayer
 
         if (DEBUG.ShowHitboxes) {Hitbox.DrawDebug(spriteBatch); SpecialHitbox.DrawDebug(spriteBatch);}
 
-        // Vector2 origin = new Vector2(Sprite.Width / 2f, Sprite.Height / 2f);
-        // Sprite.Origin = origin;
-
         SpriteEffects effect =
             _facingRight ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-        HitFlash.Draw(spriteBatch, Sprite, Location, _health.IsHitFlashing, Sprite.Color, effect);
+        HitFlash.Draw(spriteBatch, Sprite, Position, _health.IsHitFlashing, Sprite.Color, effect);
 
         if (_equippedWeapon != null)
         {
-            _equippedWeapon.Draw(spriteBatch, Location, _facingRight);
+            _equippedWeapon.Draw(spriteBatch, Position, _facingRight);
         }
 
         _hotbar.Draw(spriteBatch, this);

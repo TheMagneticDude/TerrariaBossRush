@@ -32,7 +32,7 @@ public class WeaponHotbarEntry : IHotbarEntry
 
         if (_attackWhenSelected)
         {
-            _weapon.Attack(player.Location, player.FacingRight);
+            _weapon.Attack(player.Position, player.FacingRight);
         }
     }
 
@@ -63,7 +63,7 @@ public class WeaponHotbarEntry : IHotbarEntry
             texture,
             new Vector2(slot.Center.X, slot.Center.Y),
             null,
-            Color.White,
+            _weapon.AttackData.Tint,
             0f,
             new Vector2(texture.Width / 2f, texture.Height / 2f),
             scale,

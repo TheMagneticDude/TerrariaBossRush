@@ -37,10 +37,13 @@ public class Game1 : Core
 
     //================World Handling===========================
     private WorldHandler _worldHandler;
-    private Texture2D _backgroundTexture;
+    private List<Texture2D> _backgroundTextures;
     private Rectangle _screenRectangle;
 
     private UIManager _uiManager;
+    private Texture2D _statusEffectPixel;
+    private StatusEffectVisuals _statusEffectVisuals;
+    private HotbarUI _hotbarUI;
     private CombatManager _combatManager;
     private RoomManager _roomManager;
 
@@ -59,7 +62,7 @@ public class Game1 : Core
     {
         _inputManager = new InputManager();
         _p1Input = new PlayerInput(_inputManager);
-        _worldHandler = new WorldHandler(WindowWidth, WindowHeight);
+        _worldHandler = new WorldHandler(WindowWidth, WindowHeight, _backgroundTextures);
         _screenRectangle = new Rectangle(0, 0, WindowWidth, WindowHeight);
 
         // Core.Initialize triggers LoadContent in this project, so all fields
@@ -71,30 +74,42 @@ public class Game1 : Core
 
     protected override void LoadContent()
     {
+        _statusEffectPixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
+        _statusEffectPixel.SetData(new[] { Color.White });
+        _statusEffectVisuals = new StatusEffectVisuals(_statusEffectPixel);
+
         BlockFactory.Instance.LoadAllTextures(Content);
         BossFactory.Instance.LoadAllTextures(Content);
+        
 
         _bossManager = new BossManager();
+        
 
         ItemFactory.Instance.LoadAllTextures(Content);
         ProjectileFactory.Instance.LoadAllTextures(Content);
-        WeaponFactory.Instance.LoadAllTextures(Content);
+        WeaponFactory.Instance.LoadAllTextures(Content, _statusEffectPixel);
 
 
-        // Will create a class that automatically handles player creation later.
         TextureAtlas playerAtlas = TextureAtlas.FromFile(Content, "Player/Player.xml");
 
         IHotbarEntry[] hotbarEntries =
         [
-            new WeaponHotbarEntry("Sword", WeaponFactory.Instance.CreateSword(), false),
-            new WeaponHotbarEntry("Dagger", WeaponFactory.Instance.CreateDagger(_projectileManager), false),
-            new EmptyHotbarEntry("Empty"),
+            new WeaponHotbarEntry("Wooden Sword", WeaponFactory.Instance.CreateSword(), false),
+            new WeaponHotbarEntry("Magic Dagger", WeaponFactory.Instance.CreateDagger(_projectileManager), false),
+            new WeaponHotbarEntry("Bow", WeaponFactory.Instance.CreateBow(_projectileManager), false),
             ItemFactory.Instance.CreateHealthPot(),
-            ItemFactory.Instance.CreateRecallPot()
+            ItemFactory.Instance.CreateRecallPot(),
+            new WeaponHotbarEntry("Staff", WeaponFactory.Instance.CreateStaff(_projectileManager), false),
+            new WeaponHotbarEntry("Yo-yo", WeaponFactory.Instance.CreateYoyo(), false),
+            new WeaponHotbarEntry("Whip", WeaponFactory.Instance.CreateWhip(), false),
+            new WeaponHotbarEntry("Fire Bow", WeaponFactory.Instance.CreateFireBow(_projectileManager), false),
+            new WeaponHotbarEntry("Frost Staff", WeaponFactory.Instance.CreateFrostStaff(_projectileManager), false)
         ];
 
         PlayerHotbar hotbar = new PlayerHotbar(hotbarEntries);
-        _player1 = new Player(playerAtlas.CreateAnimatedSprite("Idle"), playerAtlas, hotbar);
+        _player1 = new Player(playerAtlas.CreateAnimatedSprite("Idle"), playerAtlas, hotbar, _p1Input);
+
+        BossFactory.Instance.TargetPlayer = _player1;
 
         RoomFactory roomFactory = new RoomFactory();
         _roomManager = new RoomManager(roomFactory,_bossManager,_player1);
@@ -109,13 +124,21 @@ public class Game1 : Core
         _music = new MusicPlayer(_playList, false, 0.5f);
         _music.Start();
 
-        _backgroundTexture = Content.Load<Texture2D>("Background/Forestbackground");
+        _backgroundTextures = [
+            Content.Load<Texture2D>("Background/Forestbackground"),
+        ];
 
         _uiManager = new UIManager(Content);
 
         _combatManager = new CombatManager(_projectileManager);
         _roomManager.RoomLoaded += _combatManager.Clear;
         _roomManager.LoadCurrentRoom();
+    }
+
+    protected override void UnloadContent()
+    {
+        _statusEffectPixel?.Dispose();
+        base.UnloadContent();
     }
 
     protected override void Update(GameTime gameTime)
@@ -130,13 +153,13 @@ public class Game1 : Core
         _p1Input.Update(gameTime);
         _roomManager.Update(_p1Input, gameTime);
 
-        _bossManager.UpdateAll(gameTime, _player1.Location);
+        _bossManager.UpdateAll(gameTime, _player1.Position);
 
         // Player may spawn projectiles during this update.
-        _player1.Update(gameTime, _p1Input);
+        _player1.Update(gameTime);
         _combatManager.Update(gameTime, _player1,_bossManager.Bosses, _roomManager.WorldMesh);
 
-        _worldHandler.Update(_player1.Location);
+        _worldHandler.Update(_player1.Position);
 
         //exit handler
         if (_p1Input.IsNewPress(KeyAction.Exit))
@@ -149,14 +172,24 @@ public class Game1 : Core
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
+
+        SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null, null);
+        // Draw using a source rectangle larger than the texture dimensions to trigger tiling
+        Rectangle destinationRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000);
+        Rectangle sourceRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000); 
+
+        SpriteBatch.Draw(_backgroundTextures[_worldHandler.BackgroundID], destinationRectangle, sourceRectangle, Color.White);
+        SpriteBatch.End();
+
+
+
         SpriteBatch.Begin(
             samplerState: SamplerState.PointClamp,
             transformMatrix: _worldHandler.GetTransformMatrix()
         );
 
-        SpriteBatch.Draw(_backgroundTexture, _screenRectangle, Color.White);
 
-        _bossManager.DrawAll(SpriteBatch);
+        _bossManager.DrawAll(SpriteBatch, _statusEffectVisuals);
 
         _player1.Draw(SpriteBatch);
         _projectileManager.Draw(SpriteBatch);
@@ -171,6 +204,8 @@ public class Game1 : Core
         _uiManager.Draw(SpriteBatch, _player1);
 
         SpriteBatch.End();
+
+        
 
         base.Draw(gameTime);
     }

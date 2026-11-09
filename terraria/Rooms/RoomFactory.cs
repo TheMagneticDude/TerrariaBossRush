@@ -28,7 +28,7 @@ public class RoomFactory
 
             data.ObjectType = values[0];
             data.ObjectName = values[1];
-            data.Location = values[2];
+            data.Position = values[2];
 
             objects.Add(data);
         }
@@ -38,8 +38,8 @@ public class RoomFactory
         //amke comparator
         objects.Sort((a,b) =>
         {
-            Vector2 locA = GetLocation(a.Location);
-            Vector2 locB = GetLocation(b.Location);
+            Vector2 locA = GetLocation(a.Position);
+            Vector2 locB = GetLocation(b.Position);
 
             int compareX = locA.X.CompareTo(locB.X);
 
@@ -57,7 +57,7 @@ public class RoomFactory
     {
         ArgumentNullException.ThrowIfNull(data);
 
-        Vector2 location = GetLocation(data.Location);
+        Vector2 location = GetLocation(data.Position);
         if (data.ObjectType == "Block")
         {
             return CreateBlock(data.ObjectName, location);

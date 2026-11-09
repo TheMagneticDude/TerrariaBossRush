@@ -51,7 +51,7 @@ public class RecallPotion: IItem
 
             if (_timer <= 0)
             {
-                player.Location = _recallLocation;
+                player.Position = _recallLocation;
                 player.Velocity = Vector2.Zero;
 
                 IsActive = false;
@@ -67,11 +67,11 @@ public class RecallPotion: IItem
         {
             if (player.FacingRight)
             {
-                _potPosition = player.Location + new Vector2(25, 22);
+                _potPosition = player.Position + new Vector2(25, 22);
             }
             else
             {
-                _potPosition = player.Location + new Vector2(-1, 22);
+                _potPosition = player.Position + new Vector2(-1, 22);
             }
             _sprite.Draw(spriteBatch, _potPosition);
         }
