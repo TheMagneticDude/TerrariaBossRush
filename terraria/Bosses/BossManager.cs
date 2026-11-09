@@ -1,5 +1,5 @@
 using System.Collections.Generic;
-using System.Runtime.CompilerServices;
+using terraria.UI;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -28,11 +28,16 @@ public class BossManager
         }
     }
 
-    public void DrawAll(SpriteBatch spriteBatch)
+    public void DrawAll(SpriteBatch spriteBatch, StatusEffectVisuals effectVisuals)
     {
+        System.ArgumentNullException.ThrowIfNull(effectVisuals);
         foreach (IBoss Boss in Bosses)
         {
             Boss.Draw(spriteBatch);
+            if (!Boss.Health.IsDead)
+            {
+                effectVisuals.Draw(spriteBatch, Boss.Hitbox.BoundingBox, Boss.Health.Effects);
+            }
         }
     }
 

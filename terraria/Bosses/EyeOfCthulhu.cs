@@ -13,8 +13,9 @@ namespace terraria.Bosses;
 
 public class EyeOfCthulhu: IBoss
 {
-    public HealthComponent Health { get; } = new(1000, 0f, invulnerabilityDuration: 0f);
-    public int ContactDamage => 20;
+    public HealthComponent Health { get; } = new(TerrariaStats.EyeHealth, invulnerabilityDuration: 0f);
+    public int ContactDamage => Health.CurrentHealth <= Health.MaxHealth / 2
+        ? TerrariaStats.EyeSecondFormContact : TerrariaStats.EyeContact;
     private readonly RotatedRectangleCollider _hitbox = new(Vector2.Zero, 1f, 1f);
 
     public Vector2 Position { get; set; }
@@ -82,6 +83,7 @@ public class EyeOfCthulhu: IBoss
     {
         if (Health.IsDead) return;
         Health.Update(gameTime);
+        if (Health.IsDead) return;
         if (Target != null)
         {
             TargetPos = Target.Position;
@@ -188,7 +190,7 @@ public class EyeOfCthulhu: IBoss
         if (Health.IsDead) return;
         _sprite.CenterOrigin();
         SpriteEffects effect = _facingRight ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, _sprite.Color, effect, Rotation);
+        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, Health.Effects.Tint(_sprite.Color), effect, Rotation);
         Hitbox.DrawDebug(spriteBatch);
     }
 }

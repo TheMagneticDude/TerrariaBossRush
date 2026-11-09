@@ -2,61 +2,79 @@ using System;
 using Microsoft.Xna.Framework;
 
 namespace terraria.Combat;
+
 public class HealthComponent
 {
     private const float HitFlashDuration = 0.15f;
+    private readonly float _invulnerabilityDuration;
     private float _hitFlashTimer;
+    private float _invulnerabilityTimer;
+
+    public StatusEffectComponent Effects { get; } = new StatusEffectComponent();
+    public int CurrentHealth { get; private set; }
+    public int MaxHealth { get; }
+    public bool IsDead { get; private set; }
+    public bool IsInvulnerable { get; set; }
     public bool IsHitFlashing => _hitFlashTimer > 0f;
 
-    private readonly float _slowDuration;
-    private readonly float _invulnerabilityDuration;
-    private float _slowTimer;
-    private float _invulnerabilityTimer;
-    public int CurrentHealth { get; private set; }
-    public int MaxHealth { get; private set; }
-    public bool IsDead { get; private set; }
-    public bool Slow { get; set; }
-    public bool IsInvulnerable { get; set; } = false;
-
-    public HealthComponent(int maxHealth, float slowDuration, float invulnerabilityDuration = 0.75f)
+    public HealthComponent(int maxHealth, float invulnerabilityDuration = 0.75f)
     {
         if (maxHealth <= 0)
         {
-            throw new ArgumentException("Max health must be greater than zero.");
+            throw new ArgumentOutOfRangeException(nameof(maxHealth));
         }
-        if (slowDuration < 0)
-        {
-            throw new ArgumentException("Slow duration must be a non-negative value.");
-        }
+
         if (invulnerabilityDuration < 0)
         {
             throw new ArgumentOutOfRangeException(nameof(invulnerabilityDuration));
         }
-        _invulnerabilityDuration = invulnerabilityDuration;
+
         MaxHealth = maxHealth;
         CurrentHealth = maxHealth;
-        IsDead = false;
-        Slow = false;
-        _slowDuration = slowDuration;
-        _slowTimer = 0f;
+        _invulnerabilityDuration = invulnerabilityDuration;
+    }
+
+    public bool ReceiveHit(AttackDefinition attack)
+    {
+        ArgumentNullException.ThrowIfNull(attack);
+        if (!TakeDamage(attack.Damage))
+        {
+            return false;
+        }
+
+        if (!IsDead)
+        {
+            foreach (StatusEffectDefinition effect in attack.Effects)
+            {
+                Effects.Apply(effect);
+            }
+        }
+
+        return true;
     }
 
     public bool TakeDamage(int damage)
     {
-        if (damage<=0 || IsDead || IsInvulnerable)
+        if (damage <= 0 || IsDead || IsInvulnerable)
         {
             return false;
         }
+
+        ApplyDamage(damage);
         _hitFlashTimer = HitFlashDuration;
-        CurrentHealth -= damage;
-        if (CurrentHealth <= 0)
-        {
-            CurrentHealth = 0;
-            IsDead = true;
-        }
-        IsInvulnerable = _invulnerabilityDuration > 0f;
         _invulnerabilityTimer = _invulnerabilityDuration;
+        IsInvulnerable = _invulnerabilityDuration > 0f;
         return true;
+    }
+
+    private void ApplyDamage(int damage)
+    {
+        CurrentHealth = Math.Max(0, CurrentHealth - damage);
+        IsDead = CurrentHealth == 0;
+        if (IsDead)
+        {
+            Effects.Clear();
+        }
     }
 
     public void Heal(int amount)
@@ -65,44 +83,49 @@ public class HealthComponent
         {
             return;
         }
-        CurrentHealth += Math.Min(amount, MaxHealth - CurrentHealth);
+
+        int missingHealth = MaxHealth - CurrentHealth;
+        CurrentHealth += Math.Min(amount, missingHealth);
     }
 
     public void Update(GameTime gameTime)
     {
         ArgumentNullException.ThrowIfNull(gameTime);
+        float seconds = (float)gameTime.ElapsedGameTime.TotalSeconds;
+        UpdateEffects(seconds);
+        UpdateInvulnerability(seconds);
+        _hitFlashTimer = Math.Max(0f, _hitFlashTimer - seconds);
+    }
 
-        _hitFlashTimer = Math.Max(0f, _hitFlashTimer - (float)gameTime.ElapsedGameTime.TotalSeconds);
-
-        if (IsInvulnerable)
+    private void UpdateEffects(float seconds)
+    {
+        if (IsDead)
         {
-            _invulnerabilityTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (_invulnerabilityTimer <= 0f)
-            {
-                IsInvulnerable = false;
-            }
+            return;
         }
 
-        if (Slow)
+        int damage = Effects.Update(seconds);
+        ApplyDamage(damage);
+    }
+
+    private void UpdateInvulnerability(float seconds)
+    {
+        if (!IsInvulnerable)
         {
-            _slowTimer += (float)gameTime.ElapsedGameTime.TotalSeconds;
-            if (_slowTimer >= _slowDuration)
-            {
-                Slow = false;
-                _slowTimer = 0f;
-            }
+            return;
         }
+
+        _invulnerabilityTimer = Math.Max(0f, _invulnerabilityTimer - seconds);
+        IsInvulnerable = _invulnerabilityTimer > 0f;
     }
 
     public void Reset()
     {
         CurrentHealth = MaxHealth;
-        _hitFlashTimer = 0f;
         IsDead = false;
-        Slow = false;
-        _slowTimer = 0f;
-        _invulnerabilityTimer = 0f;
         IsInvulnerable = false;
+        _hitFlashTimer = 0f;
+        _invulnerabilityTimer = 0f;
+        Effects.Clear();
     }
 }

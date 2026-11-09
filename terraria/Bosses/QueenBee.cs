@@ -15,8 +15,8 @@ namespace terraria.Bosses;
 
 public class QueenBee : IBoss
 {
-    public HealthComponent Health { get; } = new(1200, 0f, invulnerabilityDuration: 0f);
-    public int ContactDamage => 20;
+    public HealthComponent Health { get; } = new(TerrariaStats.QueenBeeHealth, invulnerabilityDuration: 0f);
+    public int ContactDamage => TerrariaStats.QueenBeeContact;
     private readonly RotatedRectangleCollider _hitbox = new(Vector2.Zero, 1f, 1f);
 
     public Vector2 Position { get; set; }
@@ -77,6 +77,7 @@ public class QueenBee : IBoss
     {
         if (Health.IsDead) return;
         Health.Update(gameTime);
+        if (Health.IsDead) return;
         if (Target != null)
         {
             TargetPos = Target.Position;
@@ -160,7 +161,7 @@ public class QueenBee : IBoss
         if (Health.IsDead) return;
         _sprite.CenterOrigin();
         SpriteEffects effect = _facingRight ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
-        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, _sprite.Color, effect);
+        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, Health.Effects.Tint(_sprite.Color), effect);
         Hitbox.DrawDebug(spriteBatch);
     }
 }

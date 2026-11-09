@@ -27,9 +27,14 @@ As of Sprint 3, this program includes three different boss levels that you can s
 | Attack | `Z`, `N`, or Left Mouse Button |
 | Swap to Sword | `1`, Numpad `1` |
 | Swap to Dagger | `2`, Numpad `2` |
-| Swap to Item 3 (TBD) | `3`, Numpad `3` |
+| Swap to Bow | `3`, Numpad `3` |
 | Swap to Health Potion | `4`, Numpad `4` |
 | Swap to Recall Potion | `5`, Numpad `5` |
+| Swap to Staff | `6`, Numpad `6` |
+| Swap to Yo-yo | `7`, Numpad `7` |
+| Swap to Whip | `8`, Numpad `8` |
+| Swap to Fire Bow | `9`, Numpad `9` |
+| Swap to Frost Staff | `0`, Numpad `0` |
 | Use Potions | Right Mouse Button |
 | Reset | `R` |
 | Exit | `Q` or `Esc` |

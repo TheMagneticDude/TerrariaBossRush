@@ -15,8 +15,8 @@ namespace terraria.Bosses;
 
 public class Slime: IBoss
 {
-    public HealthComponent Health { get; } = new(50, 0f, invulnerabilityDuration: 0f);
-    public int ContactDamage => 10;
+    public HealthComponent Health { get; } = new(TerrariaStats.BlueSlimeHealth, invulnerabilityDuration: 0f);
+    public int ContactDamage => TerrariaStats.BlueSlimeContact;
     private readonly RotatedRectangleCollider _hitbox = new(Vector2.Zero, 1f, 1f);
 
     public Vector2 Position { get; set; }
@@ -93,6 +93,7 @@ public class Slime: IBoss
         ArgumentNullException.ThrowIfNull(gameTime);
         if (Health.IsDead) return;
         Health.Update(gameTime);
+        if (Health.IsDead) return;
         if (Target != null)
         {
             TargetPos = Target.Position;
@@ -181,7 +182,7 @@ public class Slime: IBoss
     {
         if (Health.IsDead) return;
         _sprite.CenterOrigin();
-        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, Color);
+        HitFlash.Draw(spriteBatch, _sprite, Position, Health.IsHitFlashing, Health.Effects.Tint(Color));
         Hitbox.DrawDebug(spriteBatch);
     }
 }

@@ -8,12 +8,13 @@ namespace terraria.Projectiles;
 public interface IProjectile
 {
     ICollider Hitbox { get; }
-    bool IsActive {get;}
-    Vector2 Position {get;}
+    bool IsActive { get; }
+    Vector2 Position { get; }
     int Damage { get; }
+    AttackDefinition AttackData { get; }
+    bool CanHitEnemy(HealthComponent target);
+    void OnEnemyHit(HealthComponent target, bool damageApplied);
     void Destroy();
-    //float Knockback {get;}
-    //CombatTeam Team {get;}
     
     void Update(GameTime gameTime);
     void Draw(SpriteBatch spriteBatch);
