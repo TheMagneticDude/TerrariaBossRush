@@ -6,6 +6,7 @@ using terraria.Hotbar;
 using terraria.Weapons;
 using terraria.Collision;
 using terraria.Combat;
+using terraria.Entity;
 
 
 namespace terraria.Players;
@@ -13,13 +14,9 @@ using static terraria.Constants;
 
 
 
-public interface IPlayer
+public interface IPlayer : IEntity
 {
-    public Vector2 Location { get; set; }
-    public Vector2 Velocity {get; set;}
-    public CapsuleCollider Hitbox {get; set;}    
     public ICollider SpecialHitbox {get;set;}
-    public bool IsGrounded { get; set; }
     public PlayerMovementEffects MovementEffects {get;set;}
     bool IsDead { get; }
     void TakeDamage(int damage);
@@ -30,9 +27,6 @@ public interface IPlayer
 
     PlayerHotbar Hotbar { get; }
     IHotbarEntry SelectedHotbarItem { get; }
-    
-    void Update(GameTime gameTime, PlayerInput input);
-    void Draw(SpriteBatch spriteBatch);
 
     void EquipWeapon(IWeapon weapon);
     void UnequipWeapon();

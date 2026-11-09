@@ -32,7 +32,7 @@ public class WeaponHotbarEntry : IHotbarEntry
 
         if (_attackWhenSelected)
         {
-            _weapon.Attack(player.Location, player.FacingRight);
+            _weapon.Attack(player.Position, player.FacingRight);
         }
     }
 

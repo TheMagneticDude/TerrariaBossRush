@@ -4,6 +4,7 @@ using terraria.UI;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary.Graphics;
+using terraria.Entity;
 using System;
 
 using terraria.Bosses.States;
@@ -24,6 +25,7 @@ public class EyeOfCthulhu: IBoss
 
     public Vector2 TargetPos {get;set;}
     public float Rotation { get; set; }
+    public IEntity Target { get; set; }
     public ICollider Hitbox
     {
         get
@@ -75,11 +77,14 @@ public class EyeOfCthulhu: IBoss
     }
 
 
-    public void Update(GameTime gameTime, Vector2 PlayerPos)
+    public void Update(GameTime gameTime)
     {
         if (Health.IsDead) return;
         Health.Update(gameTime);
-        TargetPos = PlayerPos;
+        if (Target != null)
+        {
+            TargetPos = Target.Position;
+        }
         _state.Update(gameTime);
         _sprite.Update(gameTime);
         

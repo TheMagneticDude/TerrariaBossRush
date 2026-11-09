@@ -58,7 +58,7 @@ public class RoomManager
 
         foreach(IBlock b in blockList)
         {
-            occupiedPositions.Add(b.Location);
+            occupiedPositions.Add(b.Position);
         }
 
 
@@ -68,7 +68,7 @@ public class RoomManager
         //Horizontal pass
         for (int i = 0; i < blockList.Count; i++)
         {
-            Vector2 startPos = blockList[i].Location;
+            Vector2 startPos = blockList[i].Position;
 
             bool hasBlockOnTop = occupiedPositions.Contains(new Vector2(startPos.X, startPos.Y - BlockSize));
             if (mergedHorizontally.Contains(startPos) || hasBlockOnTop)
@@ -115,7 +115,7 @@ public class RoomManager
         int j = 0;
         while (j < blockList.Count)
         {
-            Vector2 startPos = blockList[j].Location;
+            Vector2 startPos = blockList[j].Position;
 
             // sip if already scanned by the horizontal pass
             if (mergedHorizontally.Contains(startPos))
@@ -134,7 +134,7 @@ public class RoomManager
             int runHeight = 1;
             while (j + runHeight < blockList.Count)
             {
-                Vector2 nextPos = blockList[j + runHeight].Location;
+                Vector2 nextPos = blockList[j + runHeight].Position;
                 Vector2 expectedPos = new Vector2(startPos.X, startPos.Y + (runHeight * BlockSize));
 
                 bool nextHasExposedSide = !occupiedPositions.Contains(new Vector2(nextPos.X - BlockSize, nextPos.Y)) || !occupiedPositions.Contains(new Vector2(nextPos.X + BlockSize, nextPos.Y));
@@ -194,7 +194,7 @@ public class RoomManager
 
         _specialBlocks = _blocks.OfType<SpecialBlock>().ToList<SpecialBlock>();
 
-        _player.Location = new Vector2(200, 450);
+        _player.Position = new Vector2(200, 450);
         _player.Velocity = Vector2.Zero;
     }
 
@@ -270,10 +270,10 @@ public class RoomManager
     public void ProcessPlayerWorldCollisions()
     {
         //process x collision first
-        Vector2 loc = new Vector2(_player.Location.X, _player.Location.Y);
+        Vector2 loc = new Vector2(_player.Position.X, _player.Position.Y);
         loc.X += _player.Velocity.X; // project one tick into the future
-        _player.Location = loc;
-        _player.Hitbox.Update(_player.Location);
+        _player.Position = loc;
+        _player.Hitbox.Update(_player.Position);
 
         for (int i = 0; i < WorldMesh.Count; i++)
         {
@@ -284,7 +284,7 @@ public class RoomManager
             if (_player.Hitbox.BoundingBox.Intersects(surfaceRect))
             {
                 ResolveXAxisCollision(surface, surfaceRect);
-                _player.Hitbox.Update(_player.Location);
+                _player.Hitbox.Update(_player.Position);
             }
         }
 
@@ -293,10 +293,10 @@ public class RoomManager
         _player.IsGrounded = false;
 
         // process y collision second
-        loc = new Vector2(_player.Location.X, _player.Location.Y);
+        loc = new Vector2(_player.Position.X, _player.Position.Y);
         loc.Y += _player.Velocity.Y; // project one tick into the future
-        _player.Location = loc;
-        _player.Hitbox.Update(_player.Location);
+        _player.Position = loc;
+        _player.Hitbox.Update(_player.Position);
 
         for (int i = 0; i < WorldMesh.Count; i++)
         {
@@ -307,7 +307,7 @@ public class RoomManager
             if (_player.Hitbox.BoundingBox.Intersects(surfaceRect))
             {
                 ResolveYAxisCollision(surface, surfaceRect);
-                _player.Hitbox.Update(_player.Location);
+                _player.Hitbox.Update(_player.Position);
             }
         }
         UpdatePlayerGroundContact();
@@ -319,7 +319,7 @@ public class RoomManager
         // gravity moves the feet less than one pixel, but never during a jump.
         if (_player.Velocity.Y < 0 || _player.IsGrounded) return;
 
-        float feet = _player.Location.Y + _player.Hitbox.BoundingBox.Height;
+        float feet = _player.Position.Y + _player.Hitbox.BoundingBox.Height;
         Rectangle bounds = _player.Hitbox.BoundingBox;
         foreach (CollisionSurface surface in WorldMesh)
         {
@@ -329,11 +329,11 @@ public class RoomManager
             if (bounds.Right > floor.Left && bounds.Left < floor.Right &&
                 gap >= -1f && gap <= 1f)
             {
-                _player.Location = new Vector2(_player.Location.X,
+                _player.Position = new Vector2(_player.Position.X,
                     floor.Top - bounds.Height);
                 _player.Velocity = new Vector2(_player.Velocity.X, 0f);
                 _player.IsGrounded = true;
-                _player.Hitbox.Update(_player.Location);
+                _player.Hitbox.Update(_player.Position);
                 return;
             }
         }
@@ -385,7 +385,7 @@ public class RoomManager
     private void ResolveXAxisCollision(CollisionSurface surface, Rectangle surfaceRect)
     {
         Rectangle playerBounds = _player.Hitbox.BoundingBox;
-        Vector2 newLocation = _player.Location;
+        Vector2 newLocation = _player.Position;
 
         if (_player.Velocity.X > 0)
         {
@@ -398,14 +398,14 @@ public class RoomManager
             newLocation.X = surfaceRect.Right;
         }
 
-        _player.Location = newLocation;
+        _player.Position = newLocation;
         _player.Velocity = new Vector2(0, _player.Velocity.Y);
     }
 
     private void ResolveYAxisCollision(CollisionSurface surface, Rectangle surfaceRect)
     {
         Rectangle playerBounds = _player.Hitbox.BoundingBox;
-        Vector2 newLocation = _player.Location;
+        Vector2 newLocation = _player.Position;
 
         if (_player.Velocity.Y > 0)
         {
@@ -423,7 +423,7 @@ public class RoomManager
             _player.IsGrounded = false;
         }
 
-        _player.Location = newLocation;
+        _player.Position = newLocation;
         _player.Velocity = new Vector2(_player.Velocity.X, 0);
     }
 
@@ -465,7 +465,7 @@ public class RoomManager
     public void SpecialBlockCollision()
     {
         // Use the resolved position, including a one-pixel probe below the feet.
-        _player.SpecialHitbox.Update(_player.Location);
+        _player.SpecialHitbox.Update(_player.Position);
         _player.MovementEffects = PlayerMovementEffects.None;
         foreach(SpecialBlock sb in _specialBlocks)
         {
