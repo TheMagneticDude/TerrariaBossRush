@@ -73,8 +73,10 @@ public class Game1 : Core
     {
         BlockFactory.Instance.LoadAllTextures(Content);
         BossFactory.Instance.LoadAllTextures(Content);
+        
 
         _bossManager = new BossManager();
+        
 
         ItemFactory.Instance.LoadAllTextures(Content);
         ProjectileFactory.Instance.LoadAllTextures(Content);
@@ -94,7 +96,9 @@ public class Game1 : Core
         ];
 
         PlayerHotbar hotbar = new PlayerHotbar(hotbarEntries);
-        _player1 = new Player(playerAtlas.CreateAnimatedSprite("Idle"), playerAtlas, hotbar);
+        _player1 = new Player(playerAtlas.CreateAnimatedSprite("Idle"), playerAtlas, hotbar, _p1Input);
+
+        BossFactory.Instance.TargetPlayer = _player1;
 
         RoomFactory roomFactory = new RoomFactory();
         _roomManager = new RoomManager(roomFactory,_bossManager,_player1);
@@ -130,13 +134,13 @@ public class Game1 : Core
         _p1Input.Update(gameTime);
         _roomManager.Update(_p1Input, gameTime);
 
-        _bossManager.UpdateAll(gameTime, _player1.Location);
+        _bossManager.UpdateAll(gameTime, _player1.Position);
 
         // Player may spawn projectiles during this update.
-        _player1.Update(gameTime, _p1Input);
+        _player1.Update(gameTime);
         _combatManager.Update(gameTime, _player1,_bossManager.Bosses, _roomManager.WorldMesh);
 
-        _worldHandler.Update(_player1.Location);
+        _worldHandler.Update(_player1.Position);
 
 
 

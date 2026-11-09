@@ -6,7 +6,9 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary.Graphics;
+using terraria.Entity;
 using static terraria.Constants;
+
 
 
 namespace terraria.Bosses;
@@ -23,6 +25,7 @@ public class Slime: IBoss
     public bool IsGrounded { get;  set; }
     public Vector2 TargetPos {get;set;}
     public Color Color {get;set;}
+    public IEntity Target { get; set; }
 
     public ICollider Hitbox
     {
@@ -50,7 +53,7 @@ public class Slime: IBoss
     
 
     
-    public Slime(AnimatedSprite sprite, TextureAtlas atlas)
+    public Slime(AnimatedSprite sprite, TextureAtlas atlas, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -58,11 +61,12 @@ public class Slime: IBoss
         Drag = new Vector2(2f,0f);
         Velocity = new Vector2(0, 0);
         Color = Color.White;
+        Target = target;
 
         _sprite.CenterOrigin();
     }
 
-    public Slime(AnimatedSprite sprite, TextureAtlas atlas, Color c)
+    public Slime(AnimatedSprite sprite, TextureAtlas atlas, Color c, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -70,7 +74,7 @@ public class Slime: IBoss
         Drag = new Vector2(2f,0f);
         Velocity = new Vector2(0, 0);
         Color = c;
-
+        Target = target;
         _sprite.CenterOrigin();
     }
 
@@ -84,13 +88,15 @@ public class Slime: IBoss
         _sprite.Animation = _atlas.GetAnimation(animationName);
     }
 
-    public void Update(GameTime gameTime, Vector2 PlayerPos)
+    public void Update(GameTime gameTime)
     {
         ArgumentNullException.ThrowIfNull(gameTime);
-
         if (Health.IsDead) return;
         Health.Update(gameTime);
-        TargetPos = PlayerPos;
+        if (Target != null)
+        {
+            TargetPos = Target.Position;
+        }
         _sprite.Update(gameTime);
         ApplyPhysics();
         HandleMovement();

@@ -2,6 +2,7 @@ using MonoGameLibrary.Graphics;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
+using terraria.Entity;
 using System.Collections.Generic;
 
 namespace terraria.Bosses;
@@ -13,6 +14,8 @@ public class BossFactory
     private TextureAtlas _cthulhuAtlas;
 
     private TextureAtlas _slimeAtlas;
+
+    public IEntity TargetPlayer { get; set; }
 
     private static BossFactory instance = new BossFactory();
     
@@ -44,7 +47,7 @@ public class BossFactory
 
             sprite.CenterOrigin();
 
-            return new QueenBee(sprite, _queenBeeAtlas);
+            return new QueenBee(sprite, _queenBeeAtlas, TargetPlayer);
     }
 
     public EyeOfCthulhu CreateCthulhu()
@@ -53,7 +56,7 @@ public class BossFactory
 
         sprite.CenterOrigin();
 
-        return new EyeOfCthulhu(sprite, _cthulhuAtlas);
+        return new EyeOfCthulhu(sprite, _cthulhuAtlas, TargetPlayer);
     }
 
     public Slime CreateSlime()
@@ -62,7 +65,7 @@ public class BossFactory
 
             sprite.CenterOrigin();
 
-            return new Slime(sprite, _slimeAtlas);
+            return new Slime(sprite, _slimeAtlas, TargetPlayer);
     }
 
     public Slime CreateColoredSlime(Color c)
@@ -71,7 +74,7 @@ public class BossFactory
 
             sprite.CenterOrigin();
 
-            return new Slime(sprite, _slimeAtlas, c);
+            return new Slime(sprite, _slimeAtlas, c, TargetPlayer);
     }
 
 }

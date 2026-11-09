@@ -8,7 +8,7 @@ namespace terraria.Blocks;
 
 public class Block: IBlock
 {
-    public Vector2 Location { get; set; }
+    public Vector2 Position { get; set; }
 
     public Sprite TheSprite { get; set; }
 
@@ -19,13 +19,13 @@ public class Block: IBlock
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        TheSprite.Draw(spriteBatch, Location);
+        TheSprite.Draw(spriteBatch, Position);
     }
 
     public Block(Sprite sprite, Vector2 location)
     {
         this.TheSprite = sprite;
-        this.Location = location;
+        this.Position = location;
     }
 
 }

@@ -24,7 +24,7 @@ public class BossManager
     {
         foreach (IBoss Boss in Bosses)
         {
-            Boss.Update(gameTime, playerPos);
+            Boss.Update(gameTime);
         }
     }
 

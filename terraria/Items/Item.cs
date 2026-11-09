@@ -6,7 +6,7 @@ namespace terraria.Items;
 
 public class Item
 {
-    public Vector2 Location { get; set; }
+    public Vector2 Position { get; set; }
 
     public Sprite TheSprite { get; set; }
 
@@ -17,13 +17,13 @@ public class Item
 
     public void Draw(SpriteBatch spriteBatch)
     {
-        TheSprite.Draw(spriteBatch, Location);
+        TheSprite.Draw(spriteBatch, Position);
     }
 
     public Item(Sprite sprite, Vector2 location)
     {
         this.TheSprite = sprite;
-        this.Location = location;
+        this.Position = location;
     }
 
 }
