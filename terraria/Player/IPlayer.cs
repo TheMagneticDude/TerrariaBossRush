@@ -36,4 +36,7 @@ public interface IPlayer
 
     void EquipWeapon(IWeapon weapon);
     void UnequipWeapon();
+
+    int CurrentHealth { get; }
+    int MaxHealth { get; }
 }

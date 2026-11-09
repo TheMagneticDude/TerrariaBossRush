@@ -2,8 +2,9 @@ using System;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using terraria.Hotbar;
 
-namespace terraria.Hotbar;
+namespace terraria.UI;
 
 public class HotbarUI
 {
@@ -47,6 +48,7 @@ public class HotbarUI
 
             IHotbarEntry entry = hotBar.GetEntry(ii);
             entry.DrawIcon(spriteBatch, slot);
+
         }
     }
 }

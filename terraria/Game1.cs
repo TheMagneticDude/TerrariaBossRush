@@ -41,6 +41,7 @@ public class Game1 : Core
     private Rectangle _screenRectangle;
 
     private HotbarUI _hotbarUI;
+    private HealthBar _healthBar;
     private CombatManager _combatManager;
     private RoomManager _roomManager;
 
@@ -112,6 +113,9 @@ public class Game1 : Core
         _backgroundTexture = Content.Load<Texture2D>("Background/Forestbackground");
 
         _hotbarUI = new HotbarUI();
+        Texture2D heart = Content.Load<Texture2D>("UI/heart");
+        Texture2D emptyHeart = Content.Load<Texture2D>("UI/empty_heart");
+        _healthBar = new HealthBar(heart, emptyHeart, new Vector2(925,20));
 
         _combatManager = new CombatManager(_projectileManager);
         _roomManager.RoomLoaded += _combatManager.Clear;
@@ -172,6 +176,7 @@ public class Game1 : Core
         );
 
         _hotbarUI.Draw(SpriteBatch, _player1.Hotbar);
+        _healthBar.Draw(SpriteBatch, _player1.CurrentHealth, _player1.MaxHealth);
 
         if (_player1.IsDead)
         {
