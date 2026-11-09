@@ -7,6 +7,7 @@ using terraria.Blocks;
 
 using static terraria.Constants;
 using System;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace terraria.World;
 
@@ -16,12 +17,16 @@ public class WorldHandler
     public static WorldHandler Instance { get; private set; }
     public Vector2 ScreenCenter { get; private set; }
     public Vector2 CameraPosition { get; set; }
+    public int BackgroundID {get;set;}
+    public List<Texture2D> BackgroundTextures {get;}
 
 
-    public WorldHandler(int screenWidth, int screenHeight)
+    public WorldHandler(int screenWidth, int screenHeight, List<Texture2D> bt)
     {
         ScreenCenter = new Vector2(screenWidth / 2f, screenHeight / 2f);
         CameraPosition = Vector2.Zero;
+        BackgroundTextures = bt;
+        BackgroundID = 0;
 
         Instance = this;
     }
@@ -47,6 +52,11 @@ public class WorldHandler
     {
         return Matrix.CreateTranslation(new Vector3(-CameraPosition.X, -CameraPosition.Y, 0)) *
                Matrix.CreateTranslation(new Vector3(ScreenCenter.X, ScreenCenter.Y, 0));
+    }
+
+    public void SetBackground(int id)
+    {
+        BackgroundID = id;
     }
 
    
