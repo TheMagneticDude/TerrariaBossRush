@@ -223,9 +223,11 @@ public class RoomManager
     }
     public void ProcessWorldCollisions(IEntity e)
     {
+        ArgumentNullException.ThrowIfNull(e);
+        float movementMultiplier = e is IBoss boss ? boss.Health.Effects.MovementMultiplier : 1f;
         //process x collision first
         Vector2 loc = new Vector2(e.Position.X, e.Position.Y);
-        loc.X += e.Velocity.X; // project one tick into the future
+        loc.X += e.Velocity.X * movementMultiplier; // project one tick into the future
         e.Position = loc;
         e.Hitbox.Update(e.Position);
 
@@ -248,7 +250,7 @@ public class RoomManager
 
         // process y collision second
         loc = new Vector2(e.Position.X, e.Position.Y);
-        loc.Y += e.Velocity.Y; // project one tick into the future
+        loc.Y += e.Velocity.Y * movementMultiplier; // project one tick into the future
         e.Position = loc;
         e.Hitbox.Update(e.Position);
 

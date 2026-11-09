@@ -10,6 +10,7 @@ public interface IWeapon
     ICollider Hitbox { get; }
     bool IsAttacking { get; }
     int Damage { get; }
+    terraria.Combat.AttackDefinition AttackData { get; }
     int AttackId { get; }
     Texture2D Texture { get; }
     void Attack(Vector2 playerLocation, bool facingRight);

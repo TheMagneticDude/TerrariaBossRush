@@ -7,10 +7,8 @@ using terraria.Collision;
 public class Sword : Weapon
 {
     private const float WeaponScale = 1.3f;
-    private const float SwingStart = -MathHelper.PiOver2;
-    private const float SwingEnd = MathHelper.PiOver2;
-    private readonly Vector2 _rightHandOffset = new Vector2(22f, 30f);
-    private readonly Vector2 _leftHandOffset = new Vector2(5f, 30f);
+    private const float SwingStart = -MathHelper.PiOver4;
+    private const float SwingEnd = 3f * MathHelper.PiOver4;
 
     public Sword(Texture2D texture) : base(texture, 0.25f)
     {
@@ -25,27 +23,11 @@ public class Sword : Weapon
         ArgumentNullException.ThrowIfNull(gameTime);
         if (IsAttacking)
         {
-            float deltaTime = (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            AttackTimer += deltaTime;
-
-            float progress = AttackTimer / AttackDuration;
-
-            progress = MathHelper.Clamp(progress, 0f, 1f);
-
-            if (facingRight)
-            {
-                Rotation = MathHelper.Lerp(SwingStart, SwingEnd, progress);
-            }
-            else
-            {
-                Rotation = MathHelper.Lerp(-SwingStart, -SwingEnd, progress);
-            }
-            if (AttackTimer >= AttackDuration)
-            {
-                FinishAttack();
-            }
+            float elapsed = AttackTimer + (float)gameTime.ElapsedGameTime.TotalSeconds;
+            float progress = MathHelper.Clamp(elapsed / AttackDuration, 0f, 1f);
+            Rotation = MathHelper.Lerp(SwingStart, SwingEnd, progress) * (facingRight ? 1 : -1);
         }
+        base.Update(gameTime, facingRight);
     }
 
     public override void Draw(SpriteBatch spriteBatch, Vector2 playerLocation, bool facingRight)
@@ -53,8 +35,7 @@ public class Sword : Weapon
         ArgumentNullException.ThrowIfNull(spriteBatch);
         if (IsAttacking)
         {
-            Vector2 handOffset = facingRight ? _rightHandOffset : _leftHandOffset;
-            Vector2 weaponPosition = playerLocation + handOffset;
+            Vector2 weaponPosition = GetHandPosition(playerLocation, facingRight);
 
             Vector2 originOfWeapon = facingRight ? new Vector2(2f, Texture.Height - 2f) : new Vector2(Texture.Width - 2f, Texture.Height - 2f);
 
@@ -72,8 +53,7 @@ public class Sword : Weapon
             return;
         }
 
-        Vector2 handOffset = facingRight ? _rightHandOffset : _leftHandOffset;
-        Vector2 weaponPosition = playerLocation + handOffset;
+        Vector2 weaponPosition = GetHandPosition(playerLocation, facingRight);
 
         Vector2 origin = facingRight
             ? new Vector2(2f, Texture.Height - 2f)

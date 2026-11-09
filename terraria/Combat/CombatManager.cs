@@ -5,7 +5,6 @@ using terraria.Bosses;
 using terraria.Collision;
 using terraria.Players;
 using terraria.Projectiles;
-using IProjectile = terraria.Projectiles.IProjectile;
 using terraria.Weapons;
 
 namespace terraria.Combat;
@@ -13,9 +12,9 @@ namespace terraria.Combat;
 public sealed class CombatManager
 {
     private readonly ProjectileManager _projectiles;
-    private readonly HashSet<IBoss> _swingHits = new();
-    private IWeapon _weapon;
-    private int _attackId;
+    private readonly HashSet<IBoss> _swingHits = new HashSet<IBoss>();
+    private IWeapon _currentWeapon;
+    private int _currentAttackId;
 
     public CombatManager(ProjectileManager projectiles)
     {
@@ -31,13 +30,30 @@ public sealed class CombatManager
         ArgumentNullException.ThrowIfNull(worldMesh);
 
         _projectiles.Update(gameTime);
-        IWeapon weapon = player.EquippedWeapon;
-        // Each enemy can take damage once per swing.
-        if (weapon != _weapon || weapon?.AttackId != _attackId)
+        TrackAttack(player.EquippedWeapon);
+        CheckPlayerCollisions(player, bosses);
+        CheckProjectileCollisions(bosses, worldMesh);
+        _projectiles.RemoveInactive();
+    }
+
+    private void TrackAttack(IWeapon weapon)
+    {
+        int attackId = weapon?.AttackId ?? 0;
+        if (weapon == _currentWeapon && attackId == _currentAttackId)
         {
-            _swingHits.Clear();
-            _weapon = weapon;
-            _attackId = weapon?.AttackId ?? 0;
+            return;
+        }
+
+        _swingHits.Clear();
+        _currentWeapon = weapon;
+        _currentAttackId = attackId;
+    }
+
+    private void CheckPlayerCollisions(IPlayer player, IReadOnlyList<IBoss> bosses)
+    {
+        if (player.IsDead)
+        {
+            return;
         }
 
         foreach (IBoss boss in bosses)
@@ -47,18 +63,38 @@ public sealed class CombatManager
                 continue;
             }
 
-            if (!player.IsDead && weapon?.IsAttacking == true && weapon.Hitbox != null
-                && !_swingHits.Contains(boss) && weapon.Hitbox.Intersects(boss.Hitbox))
-            {
-                _swingHits.Add(boss);
-                boss.Health.TakeDamage(weapon.Damage);
-            }
+            CheckMeleeHit(player.EquippedWeapon, boss);
             if (!boss.Health.IsDead && !player.IsDead && boss.Hitbox.Intersects(player.Hitbox))
             {
                 player.TakeDamage(boss.ContactDamage);
             }
+
+            if (player.IsDead)
+            {
+                break;
+            }
+        }
+    }
+
+    private void CheckMeleeHit(IWeapon weapon, IBoss boss)
+    {
+        if (weapon == null || !weapon.IsAttacking || weapon.Hitbox == null)
+        {
+            return;
         }
 
+        if (_swingHits.Contains(boss) || !weapon.Hitbox.Intersects(boss.Hitbox))
+        {
+            return;
+        }
+
+        _swingHits.Add(boss);
+        boss.Health.ReceiveHit(weapon.AttackData);
+    }
+
+    private void CheckProjectileCollisions(IReadOnlyList<IBoss> bosses,
+        IReadOnlyList<CollisionSurface> worldMesh)
+    {
         foreach (IProjectile projectile in _projectiles.Projectiles)
         {
             if (!projectile.IsActive || projectile.Hitbox == null)
@@ -66,41 +102,50 @@ public sealed class CombatManager
                 continue;
             }
 
-            foreach (CollisionSurface surface in worldMesh)
+            CheckTerrainHit(projectile, worldMesh);
+            if (projectile.IsActive)
             {
-                if (!projectile.Hitbox.Intersects(surface))
-                {
-                    continue;
-                }
-
-                projectile.Destroy();
-                break;
+                CheckProjectileEnemyHits(projectile, bosses);
             }
-            if (!projectile.IsActive)
+        }
+    }
+
+    private static void CheckTerrainHit(IProjectile projectile, IReadOnlyList<CollisionSurface> worldMesh)
+    {
+        foreach (CollisionSurface surface in worldMesh)
+        {
+            if (projectile.Hitbox.Intersects(surface))
+            {
+                projectile.Destroy();
+                return;
+            }
+        }
+    }
+
+    private static void CheckProjectileEnemyHits(IProjectile projectile, IReadOnlyList<IBoss> bosses)
+    {
+        foreach (IBoss boss in bosses)
+        {
+            if (boss.Health.IsDead || !projectile.CanHitEnemy(boss.Health)
+                || !projectile.Hitbox.Intersects(boss.Hitbox))
             {
                 continue;
             }
 
-            foreach (IBoss boss in bosses)
+            bool damageApplied = boss.Health.ReceiveHit(projectile.AttackData);
+            projectile.OnEnemyHit(boss.Health, damageApplied);
+            if (!projectile.IsActive)
             {
-                if (boss.Health.IsDead || !projectile.Hitbox.Intersects(boss.Hitbox))
-                {
-                    continue;
-                }
-
-                boss.Health.TakeDamage(projectile.Damage);
-                projectile.Destroy();
-                break;
+                return;
             }
         }
-        _projectiles.RemoveInactive();
     }
 
     public void Clear()
     {
         _projectiles.Clear();
         _swingHits.Clear();
-        _weapon = null;
-        _attackId = 0;
+        _currentWeapon = null;
+        _currentAttackId = 0;
     }
 }

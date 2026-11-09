@@ -40,6 +40,8 @@ public class Game1 : Core
     private List<Texture2D> _backgroundTextures;
     private Rectangle _screenRectangle;
 
+    private Texture2D _statusEffectPixel;
+    private StatusEffectVisuals _statusEffectVisuals;
     private HotbarUI _hotbarUI;
     private CombatManager _combatManager;
     private RoomManager _roomManager;
@@ -71,6 +73,10 @@ public class Game1 : Core
 
     protected override void LoadContent()
     {
+        _statusEffectPixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
+        _statusEffectPixel.SetData(new[] { Color.White });
+        _statusEffectVisuals = new StatusEffectVisuals(_statusEffectPixel);
+
         BlockFactory.Instance.LoadAllTextures(Content);
         BossFactory.Instance.LoadAllTextures(Content);
         
@@ -80,19 +86,23 @@ public class Game1 : Core
 
         ItemFactory.Instance.LoadAllTextures(Content);
         ProjectileFactory.Instance.LoadAllTextures(Content);
-        WeaponFactory.Instance.LoadAllTextures(Content);
+        WeaponFactory.Instance.LoadAllTextures(Content, _statusEffectPixel);
 
 
-        // Will create a class that automatically handles player creation later.
         TextureAtlas playerAtlas = TextureAtlas.FromFile(Content, "Player/Player.xml");
 
         IHotbarEntry[] hotbarEntries =
         [
-            new WeaponHotbarEntry("Sword", WeaponFactory.Instance.CreateSword(), false),
-            new WeaponHotbarEntry("Dagger", WeaponFactory.Instance.CreateDagger(_projectileManager), false),
-            new EmptyHotbarEntry("Empty"),
+            new WeaponHotbarEntry("Wooden Sword", WeaponFactory.Instance.CreateSword(), false),
+            new WeaponHotbarEntry("Magic Dagger", WeaponFactory.Instance.CreateDagger(_projectileManager), false),
+            new WeaponHotbarEntry("Bow", WeaponFactory.Instance.CreateBow(_projectileManager), false),
             ItemFactory.Instance.CreateHealthPot(),
-            ItemFactory.Instance.CreateRecallPot()
+            ItemFactory.Instance.CreateRecallPot(),
+            new WeaponHotbarEntry("Staff", WeaponFactory.Instance.CreateStaff(_projectileManager), false),
+            new WeaponHotbarEntry("Yo-yo", WeaponFactory.Instance.CreateYoyo(), false),
+            new WeaponHotbarEntry("Whip", WeaponFactory.Instance.CreateWhip(), false),
+            new WeaponHotbarEntry("Fire Bow", WeaponFactory.Instance.CreateFireBow(_projectileManager), false),
+            new WeaponHotbarEntry("Frost Staff", WeaponFactory.Instance.CreateFrostStaff(_projectileManager), false)
         ];
 
         PlayerHotbar hotbar = new PlayerHotbar(hotbarEntries);
@@ -122,6 +132,12 @@ public class Game1 : Core
         _combatManager = new CombatManager(_projectileManager);
         _roomManager.RoomLoaded += _combatManager.Clear;
         _roomManager.LoadCurrentRoom();
+    }
+
+    protected override void UnloadContent()
+    {
+        _statusEffectPixel?.Dispose();
+        base.UnloadContent();
     }
 
     protected override void Update(GameTime gameTime)
@@ -175,7 +191,7 @@ public class Game1 : Core
         );
 
 
-        _bossManager.DrawAll(SpriteBatch);
+        _bossManager.DrawAll(SpriteBatch, _statusEffectVisuals);
 
         _player1.Draw(SpriteBatch);
         _projectileManager.Draw(SpriteBatch);
