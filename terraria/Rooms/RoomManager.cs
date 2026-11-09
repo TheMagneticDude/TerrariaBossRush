@@ -7,6 +7,7 @@ using terraria.Blocks;
 using terraria.Bosses;
 using terraria.Players;
 using terraria.Collision;
+using terraria.Entity;
 
 using static terraria.Constants;
 using Microsoft.Xna.Framework.Graphics;
@@ -221,16 +222,13 @@ public class RoomManager
             LoadCurrentRoom();
         }
     }
-
-    public void ProcessBossWorldCollisions(IBoss boss)
+    public void ProcessWorldCollisions(IEntity e)
     {
-        ArgumentNullException.ThrowIfNull(boss);
-
         //process x collision first
-        Vector2 loc = new Vector2(boss.Position.X, boss.Position.Y);
-        loc.X += boss.Velocity.X; // project one tick into the future
-        boss.Position = loc;
-        boss.Hitbox.Update(boss.Position);
+        Vector2 loc = new Vector2(e.Position.X, e.Position.Y);
+        loc.X += e.Velocity.X; // project one tick into the future
+        e.Position = loc;
+        e.Hitbox.Update(e.Position);
 
         for (int i = 0; i < WorldMesh.Count; i++)
         {
@@ -238,65 +236,22 @@ public class RoomManager
             if (!surface.VerticalOrientation) continue;
 
             Rectangle surfaceRect = surface.BoundingBox;
-            if (boss.Hitbox.Intersects(surfaceRect))
+            if (e.Hitbox.BoundingBox.Intersects(surfaceRect))
             {
-                ResolveXAxisBossCollision(boss,surface, surfaceRect);
-                boss.Hitbox.Update(boss.Position);
-            }
-        }
-
-
-        boss.IsGrounded = false;
-
-        // process y collision second
-        loc = new Vector2(boss.Position.X, boss.Position.Y);;
-        loc.Y += boss.Velocity.Y; // project one tick into the future
-        boss.Position = loc;
-        boss.Hitbox.Update(boss.Position);
-
-        for (int i = 0; i < WorldMesh.Count; i++)
-        {
-            CollisionSurface surface = WorldMesh[i];
-            if (surface.VerticalOrientation) continue;
-
-            Rectangle surfaceRect = surface.BoundingBox;
-            if (boss.Hitbox.BoundingBox.Intersects(surfaceRect) && boss.Hitbox.Intersects(surfaceRect))
-            {
-                ResolveYAxisBossCollision(boss,surface, surfaceRect);
-                boss.Hitbox.Update(boss.Position);
-            }
-        }
-    }
-    public void ProcessPlayerWorldCollisions()
-    {
-        //process x collision first
-        Vector2 loc = new Vector2(_player.Position.X, _player.Position.Y);
-        loc.X += _player.Velocity.X; // project one tick into the future
-        _player.Position = loc;
-        _player.Hitbox.Update(_player.Position);
-
-        for (int i = 0; i < WorldMesh.Count; i++)
-        {
-            CollisionSurface surface = WorldMesh[i];
-            if (!surface.VerticalOrientation) continue;
-
-            Rectangle surfaceRect = surface.BoundingBox;
-            if (_player.Hitbox.BoundingBox.Intersects(surfaceRect))
-            {
-                ResolveXAxisCollision(surface, surfaceRect);
-                _player.Hitbox.Update(_player.Position);
+                ResolveXAxisCollision(e,surface, surfaceRect);
+                e.Hitbox.Update(e.Position);
             }
         }
 
         
 
-        _player.IsGrounded = false;
+        e.IsGrounded = false;
 
         // process y collision second
-        loc = new Vector2(_player.Position.X, _player.Position.Y);
-        loc.Y += _player.Velocity.Y; // project one tick into the future
-        _player.Position = loc;
-        _player.Hitbox.Update(_player.Position);
+        loc = new Vector2(e.Position.X, e.Position.Y);
+        loc.Y += e.Velocity.Y; // project one tick into the future
+        e.Position = loc;
+        e.Hitbox.Update(e.Position);
 
         for (int i = 0; i < WorldMesh.Count; i++)
         {
@@ -304,10 +259,10 @@ public class RoomManager
             if (surface.VerticalOrientation) continue;
 
             Rectangle surfaceRect = surface.BoundingBox;
-            if (_player.Hitbox.BoundingBox.Intersects(surfaceRect))
+            if (e.Hitbox.BoundingBox.Intersects(surfaceRect))
             {
-                ResolveYAxisCollision(surface, surfaceRect);
-                _player.Hitbox.Update(_player.Position);
+                ResolveYAxisCollision(e,surface, surfaceRect);
+                e.Hitbox.Update(e.Position);
             }
         }
         UpdatePlayerGroundContact();
@@ -339,92 +294,92 @@ public class RoomManager
         }
     }
 
-    private void ResolveXAxisBossCollision(IBoss b, CollisionSurface surface, Rectangle surfaceRect)
+    private void ResolveXAxisCollision(IEntity e, CollisionSurface surface, Rectangle surfaceRect)
     {
-        Rectangle bounds = b.Hitbox.BoundingBox;
-        Vector2 newLocation = b.Hitbox.Position;
-        float halfWidth = bounds.Width / 2f;
+        Rectangle bounds = e.Hitbox.BoundingBox;
+        Vector2 newLocation = e.Position;
 
-        if (b.Velocity.X > 0)
+        if (e is IPlayer player)
         {
-            //moving right, push left
-            newLocation.X = surfaceRect.Left - halfWidth;
+            if (e.Velocity.X > 0)
+            {
+                //moving right, push left
+                newLocation.X = surfaceRect.Left - bounds.Width;
+            }
+            else if (e.Velocity.X < 0)
+            {
+                //moving left, push right
+                newLocation.X = surfaceRect.Right;
+            
         }
-        else if (b.Velocity.X < 0)
+        // Check if the entity is a boss
+        else if (e is IBoss boss)
         {
-            //moving left, push right
-            newLocation.X = surfaceRect.Right + halfWidth;
+            float halfWidth = bounds.Width / 2f;
+
+            if (e.Velocity.X > 0)
+            {
+                //moving right, push left
+                newLocation.X = surfaceRect.Left - halfWidth;
+            }
+            else if (e.Velocity.X < 0)
+            {
+                //moving left, push right
+                newLocation.X = surfaceRect.Right + halfWidth;
+            }
         }
 
-        b.Position = newLocation;
-        b.Velocity = new Vector2(0, b.Velocity.Y);
-    }
-
-    private void ResolveYAxisBossCollision(IBoss b, CollisionSurface surface, Rectangle surfaceRect)
-    {
-        Rectangle bounds = b.Hitbox.BoundingBox;
-        Vector2 newLocation = b.Hitbox.Position;
-        float halfHeight = bounds.Height / 2f;
         
-        if (b.Velocity.Y > 0)
-        {
-            //falling, push poiu
-            newLocation.Y = surfaceRect.Top - halfHeight;
-            b.IsGrounded = true;
-        }
-        else if (b.Velocity.Y < 0)
-        {
-            //moving up, puish down
-            newLocation.Y = surfaceRect.Bottom + halfHeight;
         }
 
-        b.Position = newLocation;
-        b.Velocity = new Vector2(b.Velocity.X, 0);
+        e.Position = newLocation;
+        e.Velocity = new Vector2(0, e.Velocity.Y);
     }
 
-    private void ResolveXAxisCollision(CollisionSurface surface, Rectangle surfaceRect)
+    private void ResolveYAxisCollision(IEntity e, CollisionSurface surface, Rectangle surfaceRect)
     {
-        Rectangle playerBounds = _player.Hitbox.BoundingBox;
-        Vector2 newLocation = _player.Position;
+        Rectangle bounds = e.Hitbox.BoundingBox;
+        Vector2 newLocation = e.Position;
 
-        if (_player.Velocity.X > 0)
+        if (e is IPlayer player)
         {
-            //moving right, push left
-            newLocation.X = surfaceRect.Left - playerBounds.Width;
+            if (e.Velocity.Y > 0)
+            {
+                //falling, push poiu
+                newLocation.Y = surfaceRect.Top - bounds.Height;
+                e.IsGrounded = true;
+            }
+            else if (e.Velocity.Y < 0)
+            {
+                //moving up, puish down
+                newLocation.Y = surfaceRect.Bottom;
+            }
+            else
+            {
+                e.IsGrounded = false;
+            }
         }
-        else if (_player.Velocity.X < 0)
+        // Check if the entity is a boss
+        else if (e is IBoss boss)
         {
-            //moving left, push right
-            newLocation.X = surfaceRect.Right;
+            float halfHeight = bounds.Height / 2f;
+            if (e.Velocity.Y > 0)
+            {
+                //falling, push poiu
+                newLocation.Y = surfaceRect.Top - halfHeight;
+                e.IsGrounded = true;
+            }
+            else if (e.Velocity.Y < 0)
+            {
+                //moving up, puish down
+                newLocation.Y = surfaceRect.Bottom + halfHeight;
+            }
         }
 
-        _player.Position = newLocation;
-        _player.Velocity = new Vector2(0, _player.Velocity.Y);
-    }
+        
 
-    private void ResolveYAxisCollision(CollisionSurface surface, Rectangle surfaceRect)
-    {
-        Rectangle playerBounds = _player.Hitbox.BoundingBox;
-        Vector2 newLocation = _player.Position;
-
-        if (_player.Velocity.Y > 0)
-        {
-            //falling, push poiu
-            newLocation.Y = surfaceRect.Top - playerBounds.Height;
-            _player.IsGrounded = true;
-        }
-        else if (_player.Velocity.Y < 0)
-        {
-            //moving up, puish down
-            newLocation.Y = surfaceRect.Bottom;
-        }
-        else
-        {
-            _player.IsGrounded = false;
-        }
-
-        _player.Position = newLocation;
-        _player.Velocity = new Vector2(_player.Velocity.X, 0);
+        e.Position = newLocation;
+        e.Velocity = new Vector2(e.Velocity.X, 0);
     }
 
     private void DEBUGHitbox(SpriteBatch sb)
@@ -499,10 +454,10 @@ public class RoomManager
         
         UpdateBlocks(gameTime);
 
-        ProcessPlayerWorldCollisions();
+        ProcessWorldCollisions(_player);
         foreach(IBoss b in _bossManager.Bosses)
         {
-            ProcessBossWorldCollisions(b);
+            ProcessWorldCollisions(b);
         }
 
 

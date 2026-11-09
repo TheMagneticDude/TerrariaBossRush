@@ -53,7 +53,7 @@ public class Slime: IBoss
     
 
     
-    public Slime(AnimatedSprite sprite, TextureAtlas atlas)
+    public Slime(AnimatedSprite sprite, TextureAtlas atlas, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -61,11 +61,12 @@ public class Slime: IBoss
         Drag = new Vector2(2f,0f);
         Velocity = new Vector2(0, 0);
         Color = Color.White;
+        Target = target;
 
         _sprite.CenterOrigin();
     }
 
-    public Slime(AnimatedSprite sprite, TextureAtlas atlas, Color c)
+    public Slime(AnimatedSprite sprite, TextureAtlas atlas, Color c, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -73,7 +74,7 @@ public class Slime: IBoss
         Drag = new Vector2(2f,0f);
         Velocity = new Vector2(0, 0);
         Color = c;
-
+        Target = target;
         _sprite.CenterOrigin();
     }
 
@@ -90,7 +91,6 @@ public class Slime: IBoss
     public void Update(GameTime gameTime)
     {
         ArgumentNullException.ThrowIfNull(gameTime);
-
         if (Health.IsDead) return;
         Health.Update(gameTime);
         if (Target != null)

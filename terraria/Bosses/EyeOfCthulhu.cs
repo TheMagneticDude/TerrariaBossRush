@@ -57,7 +57,7 @@ public class EyeOfCthulhu: IBoss
         _state.Enter();
     }
 
-    public EyeOfCthulhu(AnimatedSprite sprite, TextureAtlas atlas)
+    public EyeOfCthulhu(AnimatedSprite sprite, TextureAtlas atlas, IEntity target = null)
     {
         _sprite = sprite;
         _atlas = atlas;
@@ -65,6 +65,7 @@ public class EyeOfCthulhu: IBoss
         Velocity = new Vector2(0, 0); 
         Drag = new Vector2(0.2f,0.2f);
         JerkDamping = new Vector2(0.002f,0.002f);
+        Target = target;
 
         _sprite.CenterOrigin();
 
