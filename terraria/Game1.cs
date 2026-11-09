@@ -37,7 +37,7 @@ public class Game1 : Core
 
     //================World Handling===========================
     private WorldHandler _worldHandler;
-    private Texture2D _backgroundTexture;
+    private List<Texture2D> _backgroundTextures;
     private Rectangle _screenRectangle;
 
     private HotbarUI _hotbarUI;
@@ -59,7 +59,7 @@ public class Game1 : Core
     {
         _inputManager = new InputManager();
         _p1Input = new PlayerInput(_inputManager);
-        _worldHandler = new WorldHandler(WindowWidth, WindowHeight);
+        _worldHandler = new WorldHandler(WindowWidth, WindowHeight, _backgroundTextures);
         _screenRectangle = new Rectangle(0, 0, WindowWidth, WindowHeight);
 
         // Core.Initialize triggers LoadContent in this project, so all fields
@@ -113,7 +113,9 @@ public class Game1 : Core
         _music = new MusicPlayer(_playList, false, 0.5f);
         _music.Start();
 
-        _backgroundTexture = Content.Load<Texture2D>("Background/Forestbackground");
+        _backgroundTextures = [
+            Content.Load<Texture2D>("Background/Forestbackground"),
+        ];
 
         _hotbarUI = new HotbarUI();
 
@@ -156,12 +158,22 @@ public class Game1 : Core
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
+
+        SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null, null);
+        // Draw using a source rectangle larger than the texture dimensions to trigger tiling
+        Rectangle destinationRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000);
+        Rectangle sourceRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000); 
+
+        SpriteBatch.Draw(_backgroundTextures[_worldHandler.BackgroundID], destinationRectangle, sourceRectangle, Color.White);
+        SpriteBatch.End();
+
+
+
         SpriteBatch.Begin(
             samplerState: SamplerState.PointClamp,
             transformMatrix: _worldHandler.GetTransformMatrix()
         );
 
-        SpriteBatch.Draw(_backgroundTexture, _screenRectangle, Color.White);
 
         _bossManager.DrawAll(SpriteBatch);
 
@@ -183,6 +195,8 @@ public class Game1 : Core
         }
 
         SpriteBatch.End();
+
+        
 
         base.Draw(gameTime);
     }

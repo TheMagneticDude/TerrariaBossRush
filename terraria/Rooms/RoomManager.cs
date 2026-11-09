@@ -8,7 +8,6 @@ using terraria.Bosses;
 using terraria.Players;
 using terraria.Collision;
 using terraria.Entity;
-
 using static terraria.Constants;
 using Microsoft.Xna.Framework.Graphics;
 using System.Linq;
@@ -66,7 +65,7 @@ public class RoomManager
         HashSet<Vector2> mergedHorizontally = new HashSet<Vector2>();//tracks blocks already merged horizontally so vertical pass doesent need to scan them
         
 
-        //Horizontal pass
+        //Horizontal pass       
         for (int i = 0; i < blockList.Count; i++)
         {
             Vector2 startPos = blockList[i].Position;
