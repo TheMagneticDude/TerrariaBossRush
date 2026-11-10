@@ -21,6 +21,7 @@ public class InputManager
     public GamePadInfo[] GamePads { get; private set; }
 
 
+
     /// <summary>
     /// Creates a new InputManager.
     /// </summary>
@@ -43,6 +44,7 @@ public class InputManager
     /// <param name="gameTime">A snapshot of the timing values for the current frame.</param>
     public void Update(GameTime gameTime)
     {
+
         Keyboard.Update();
         Mouse.Update();
 

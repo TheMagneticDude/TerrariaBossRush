@@ -31,7 +31,8 @@ public enum KeyAction
     NextRoom,
     TriggerDebug,
     ShowHitboxes,
-    VoidFloor
+    hotbarScrollRight,
+    hotbarScrollLeft
 }
 
 
@@ -70,7 +71,9 @@ public class PlayerInput
             { KeyAction.NextRoom, new MultiBind(new TriggerKey(Keys.K)) },
             { KeyAction.TriggerDebug, new MultiBind(new TriggerKey(Keys.F3))},
             { KeyAction.ShowHitboxes, new MultiBind(new TriggerKey(Keys.B))},
-            { KeyAction.VoidFloor, new MultiBind(new TriggerKey(Keys.G))}
+            { KeyAction.hotbarScrollRight, new MultiBind(new TriggerKey(MouseButton.ScrollDown))},
+            { KeyAction.hotbarScrollLeft, new MultiBind(new TriggerKey(MouseButton.ScrollUp))},
+
         };
     }
 
