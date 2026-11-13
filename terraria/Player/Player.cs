@@ -53,7 +53,7 @@ public class Player : IPlayer
     public bool IsGrounded { get; set; }
     public PlayerMovementEffects MovementEffects {get;set;}
 
-    public PlayerInput Input { get; private set; }
+    public IPlayerInput Input { get; private set; }
 
     private TextureAtlas _atlas;
     private StateMachine<PlayerState> _stateMachine;
@@ -82,7 +82,7 @@ public class Player : IPlayer
     public int CurrentHealth => _health.CurrentHealth;
     public int MaxHealth => _health.MaxHealth;
     public bool IsDead => _health.IsDead;
-    public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
+    public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, IPlayerInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
         Sprite = sprite;

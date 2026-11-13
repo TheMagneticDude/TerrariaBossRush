@@ -436,7 +436,7 @@ public class RoomManager
         
     }
 
-    public void Update(PlayerInput input, GameTime gameTime)
+    public void Update(IPlayerInput input, GameTime gameTime)
     {
         ArgumentNullException.ThrowIfNull(input);
 

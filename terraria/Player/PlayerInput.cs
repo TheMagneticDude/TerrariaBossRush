@@ -35,7 +35,7 @@ public enum KeyAction
 }
 
 
-public class PlayerInput
+public class PlayerInput : IPlayerInput
 {
     public Dictionary<KeyAction, MultiBind> KeyBinds { get; private set; }
     InputManager Inputs {get;set;}
