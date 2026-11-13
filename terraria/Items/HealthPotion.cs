@@ -10,7 +10,7 @@ public class HealthPotion : IItem
 {
     private const float DisplayDuration = 0.5f;
 
-    private readonly Sprite _sprite;
+    private readonly Texture2D _texture;
     private float _timer;
 
     private Vector2 _potPosition;
@@ -22,11 +22,10 @@ public class HealthPotion : IItem
     public bool IsActive { get; private set; }
 
    
-    public HealthPotion(TextureAtlas atlas)
+    public HealthPotion(Texture2D texture)
     {
-        ArgumentNullException.ThrowIfNull(atlas);
-        _sprite = atlas.CreateSprite("healthPotion");
-        _sprite.CenterOrigin();
+        ArgumentNullException.ThrowIfNull(texture);
+        _texture = texture;
         IsActive = false;
     }
 
@@ -79,11 +78,33 @@ public class HealthPotion : IItem
         {
             _potPosition = player.Position + new Vector2(-2, 22);
         }
-        _sprite.Draw(spriteBatch, _potPosition);
+        spriteBatch.Draw(
+            _texture,
+            _potPosition,
+            null,
+            Color.White,
+            0f,
+            new Vector2(_texture.Width / 2f, _texture.Height / 2f),
+            1f,
+            SpriteEffects.None,
+            0f
+        );
     }
 
     public void DrawIcon(SpriteBatch spriteBatch, Rectangle slot)
     {
-        _sprite.Draw(spriteBatch, new Vector2(slot.Center.X, slot.Center.Y));
+        ArgumentNullException.ThrowIfNull(spriteBatch);
+
+        spriteBatch.Draw(
+            _texture,
+            new Vector2(slot.Center.X, slot.Center.Y),
+            null,
+            Color.White,
+            0f,
+            new Vector2(_texture.Width / 2f, _texture.Height / 2f),
+            1f,
+            SpriteEffects.None,
+            0f
+        );
     }
 }

@@ -21,6 +21,7 @@ public interface IPlayer : IEntity
     bool IsDead { get; }
     void TakeDamage(int damage);
     void Heal(int amount);
+    void Swiftness(float duration);
     IWeapon EquippedWeapon { get; }
     bool FacingRight { get; }
     int SelectedHotbarSlot { get; }

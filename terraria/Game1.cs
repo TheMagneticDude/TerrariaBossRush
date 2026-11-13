@@ -99,11 +99,13 @@ public class Game1 : Core
             new WeaponHotbarEntry("Bow", WeaponFactory.Instance.CreateBow(_projectileManager), false),
             ItemFactory.Instance.CreateHealthPot(),
             ItemFactory.Instance.CreateRecallPot(),
+            ItemFactory.Instance.CreateManaPot(),
+            ItemFactory.Instance.CreateSwiftPot(),
             new WeaponHotbarEntry("Staff", WeaponFactory.Instance.CreateStaff(_projectileManager), false),
             new WeaponHotbarEntry("Yo-yo", WeaponFactory.Instance.CreateYoyo(), false),
             new WeaponHotbarEntry("Whip", WeaponFactory.Instance.CreateWhip(), false),
-            new WeaponHotbarEntry("Fire Bow", WeaponFactory.Instance.CreateFireBow(_projectileManager), false),
-            new WeaponHotbarEntry("Frost Staff", WeaponFactory.Instance.CreateFrostStaff(_projectileManager), false)
+            //new WeaponHotbarEntry("Fire Bow", WeaponFactory.Instance.CreateFireBow(_projectileManager), false),
+            //new WeaponHotbarEntry("Frost Staff", WeaponFactory.Instance.CreateFrostStaff(_projectileManager), false)
         ];
 
         PlayerHotbar hotbar = new PlayerHotbar(hotbarEntries);

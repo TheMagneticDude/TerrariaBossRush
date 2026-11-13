@@ -65,6 +65,9 @@ public class Player : IPlayer
     private const float _jumpStrength = -16f;
     private const float _honeySpeedModifier = 0.5f;
     private const int _hazardContactDamage = 10;
+
+    private float _swiftnessMultiplier = 1f;
+    private float _swiftnessTimer = 0f;
     private bool _isTouchingHoney;
 
     private bool _facingRight = true;
@@ -182,6 +185,12 @@ public class Player : IPlayer
             _hotbar.UseSelected(this);
         }
     }
+
+    public void Swiftness(float duration)
+    {
+        _swiftnessMultiplier = 1.5f;
+        _swiftnessTimer = duration;
+    }
     
 
     public void Update(GameTime gameTime)
@@ -206,6 +215,18 @@ public class Player : IPlayer
             Velocity = Vector2.Zero;
             return;
         }
+
+        if (_swiftnessTimer > 0f)
+        {
+            _swiftnessTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+            if (_swiftnessTimer <= 0f)
+            {
+                _swiftnessTimer = 0f;
+                _swiftnessMultiplier = 1f;
+            }
+        }
+
         HandleHotbarInput();
         HandleToggleDebugInput();
 
@@ -250,7 +271,8 @@ public class Player : IPlayer
             (Input.IsPressed(KeyAction.MoveRight) ? 1f : 0f) -
             (Input.IsPressed(KeyAction.MoveLeft) ? 1f : 0f);
 
-        Velocity = new Vector2(componentX * _movementSpeed * (_isTouchingHoney ? _honeySpeedModifier : 1f), Velocity.Y);
+        Velocity = new Vector2(componentX * _movementSpeed * _swiftnessMultiplier *
+        (_isTouchingHoney ? _honeySpeedModifier : 1f), Velocity.Y);
 
         if (Velocity.X > 0)
         {
