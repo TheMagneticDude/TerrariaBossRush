@@ -21,6 +21,8 @@ public interface IPlayer : IEntity
     bool IsDead { get; }
     void TakeDamage(int damage);
     void Heal(int amount);
+
+    void RestoreMana(int amount);
     void Swiftness(float duration);
     IWeapon EquippedWeapon { get; }
     bool FacingRight { get; }
@@ -34,4 +36,8 @@ public interface IPlayer : IEntity
 
     int CurrentHealth { get; }
     int MaxHealth { get; }
+
+    int CurrentMana { get; }
+    int MaxMana { get; }
+    bool UseMana(int amount);
 }

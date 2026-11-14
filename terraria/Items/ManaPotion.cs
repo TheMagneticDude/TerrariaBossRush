@@ -32,7 +32,7 @@ public class ManaPotion: IItem
     public void Use(IPlayer player)
     {
         ArgumentNullException.ThrowIfNull(player);
-        //player.Mana(30);
+        player.RestoreMana(100);
         IsActive = true;
         _timer = DisplayDuration;
     }

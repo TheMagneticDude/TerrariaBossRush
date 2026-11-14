@@ -5,8 +5,9 @@ using terraria.Projectiles;
 
 namespace terraria.Weapons;
 
-public sealed class Staff : ProjectileWeapon
+public sealed class Staff : ProjectileWeapon, IManaWeapon
 {
+    public int ManaCost => 20;
     protected override float SpriteAngleOffset => MathHelper.PiOver4;
     protected override Vector2 GripOrigin => new Vector2(4, Texture.Height - 4);
 

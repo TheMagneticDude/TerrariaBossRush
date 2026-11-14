@@ -80,9 +80,13 @@ public class Player : IPlayer
     // Weapon stuff.
     private IWeapon _equippedWeapon;
     private readonly HealthComponent _health = new HealthComponent(TerrariaStats.PlayerHealth);
+    private readonly ManaComponent _mana = new ManaComponent(TerrariaStats.PlayerMana);
 
     public int CurrentHealth => _health.CurrentHealth;
     public int MaxHealth => _health.MaxHealth;
+
+    public int CurrentMana => _mana.CurrentMana;
+    public int MaxMana => _mana.MaxMana;
     public bool IsDead => _health.IsDead;
     public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     {
@@ -157,6 +161,15 @@ public class Player : IPlayer
     {
         _health.Heal(amount);
     }
+
+    public void RestoreMana(int amount)
+    {
+        _mana.RestoreMana(amount);
+    }
+    public bool UseMana(int amount)
+    {
+        return _mana.UseMana(amount);
+    }
     private void HandleHotbarInput()
     {
         for (int slot = 0; slot < Math.Min(10, _hotbar.Count); slot++)
@@ -202,6 +215,7 @@ public class Player : IPlayer
         if (Input.IsNewPress(KeyAction.Reset))
         {
             _health.Reset();
+            _mana.Reset();
         }
 
         if (Input.IsNewPress(KeyAction.TakeDamage))
@@ -235,8 +249,17 @@ public class Player : IPlayer
 
         if (_equippedWeapon != null && Input.IsNewPress(KeyAction.Attack))
         {
-            _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
-            _stateMachine.ChangeState(PlayerState.UseItem);
+            bool canAttack = !_equippedWeapon.IsAttacking;
+
+            if (canAttack && _equippedWeapon is IManaWeapon manaWeapon)
+            {
+                canAttack = UseMana(manaWeapon.ManaCost);
+            }
+            if (canAttack)
+            {
+                _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
+                _stateMachine.ChangeState(PlayerState.UseItem);
+            }
         }
 
         if (_equippedWeapon != null)

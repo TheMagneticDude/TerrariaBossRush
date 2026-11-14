@@ -12,6 +12,8 @@ public class UIManager
 {
     private HotbarUI _hotbarUI;
     private HealthBar _healthBar;
+
+    private ManaBar _manaBar;
     private Texture2D _blankTexture;
 
     public UIManager(ContentManager content)
@@ -22,8 +24,10 @@ public class UIManager
 
         Texture2D heart = content.Load<Texture2D>("UI/heart");
         Texture2D emptyHeart = content.Load<Texture2D>("UI/empty_heart");
+        Texture2D star = content.Load<Texture2D>("UI/star");
 
         _healthBar = new HealthBar(heart, emptyHeart, new Vector2(925, 20));
+        _manaBar = new ManaBar(star, new Vector2(925, 54));
     }
 
     public void Draw(SpriteBatch spriteBatch, IPlayer player)
@@ -43,6 +47,7 @@ public class UIManager
         _hotbarUI.Draw(spriteBatch, player.Hotbar);
 
         _healthBar.Draw(spriteBatch, player.CurrentHealth, player.MaxHealth);
+        _manaBar.Draw(spriteBatch, player.CurrentMana, player.MaxMana);
 
         if (player.IsDead)
         {

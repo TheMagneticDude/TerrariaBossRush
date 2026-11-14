@@ -214,6 +214,18 @@
 /processorParam:TextureFormat=Color
 /build:UI/heart.png
 
+#begin UI/star.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/star.png
+
 #begin Weapons/AmethystStaff.png
 /importer:TextureImporter
 /processor:TextureProcessor
