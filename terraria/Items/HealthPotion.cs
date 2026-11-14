@@ -9,9 +9,11 @@ namespace terraria.Items;
 public class HealthPotion : IItem
 {
     private const float DisplayDuration = 0.5f;
+    private const float CooldownDuration = 10f;
 
     private readonly Texture2D _texture;
-    private float _timer;
+    private float _displayTimer;
+    private float _cooldownTimer;
 
     private Vector2 _potPosition;
 
@@ -20,8 +22,11 @@ public class HealthPotion : IItem
         get { return "Health Potion"; }
     }
     public bool IsActive { get; private set; }
+    public bool IsOnCooldown
+    {
+        get { return _cooldownTimer > 0f; }
+    }
 
-   
     public HealthPotion(Texture2D texture)
     {
         ArgumentNullException.ThrowIfNull(texture);
@@ -32,11 +37,17 @@ public class HealthPotion : IItem
     public void Use(IPlayer player)
     {
         ArgumentNullException.ThrowIfNull(player);
+
+        if (IsOnCooldown)
+        {
+            return;
+        }
         
         player.Heal(30);
 
         IsActive = true;
-        _timer = DisplayDuration;
+        _displayTimer = DisplayDuration;
+        _cooldownTimer = CooldownDuration;
     }
 
     public void Select(IPlayer player)
@@ -47,16 +58,26 @@ public class HealthPotion : IItem
     {
         ArgumentNullException.ThrowIfNull(gameTime);
         ArgumentNullException.ThrowIfNull(player);
-        if (!IsActive)
+
+        float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        if (IsActive)
         {
-            return;
+            _displayTimer -= elapsed;
+
+            if (_displayTimer <= 0f)
+            {
+                IsActive = false;
+            }
         }
-
-        _timer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        if (_timer <= 0f)
+        if (IsOnCooldown)
         {
-            IsActive = false;
+            _cooldownTimer -= elapsed;
+
+            if(_displayTimer <= 0f)
+            {
+                IsActive = false;
+            }
         }
     }
 

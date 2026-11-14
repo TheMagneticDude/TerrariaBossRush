@@ -10,6 +10,8 @@ public class ItemHotbarEntry : IHotbarEntry
 {
      private readonly IItem _item;
 
+     private Texture2D _cooldownOverlay;
+
     public string Name { get; }
     
     public ItemHotbarEntry(string name, IItem item)
@@ -44,6 +46,21 @@ public class ItemHotbarEntry : IHotbarEntry
 
     public void DrawIcon(SpriteBatch spriteBatch, Rectangle slot)
     {
+        ArgumentNullException.ThrowIfNull(spriteBatch);
+
         _item.DrawIcon(spriteBatch, slot);
+
+        if (_item.IsOnCooldown)
+        {
+            if (_cooldownOverlay == null)
+            {
+                _cooldownOverlay = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
+
+                _cooldownOverlay.SetData(new[] { Color.White });
+            }
+
+            spriteBatch.Draw(_cooldownOverlay, slot, new Color(0, 0, 0, 90));
+        }
     }
+
 }

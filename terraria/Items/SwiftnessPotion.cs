@@ -9,19 +9,26 @@ namespace terraria.Items;
 public class SwiftnessPotion: IItem
 {
     private const float DisplayDuration = 0.5f;
+    private const float CooldownDuration = 10f;
     private const float SwiftnessDuration = 10f;
 
     private Vector2 _potPosition;
 
     private readonly Texture2D _texture;
 
-    private float _timer;
+    private float _displayTimer;
+    private float _cooldownTimer;
 
     public string Name
     {
         get { return "Swiftness Potion"; }
     }
     public bool IsActive { get; private set; }
+
+    public bool IsOnCooldown
+    {
+        get { return _cooldownTimer > 0f; }
+    }
 
     public SwiftnessPotion(Texture2D texture)
     {
@@ -33,9 +40,15 @@ public class SwiftnessPotion: IItem
     public void Use(IPlayer player)
     {
         ArgumentNullException.ThrowIfNull(player);
+        if (IsOnCooldown)
+        {
+            return;
+        }
+
         player.Swiftness(SwiftnessDuration);
         IsActive = true;
-        _timer = DisplayDuration;
+        _displayTimer = DisplayDuration;
+        _cooldownTimer = CooldownDuration;
     }
 
     public void Select(IPlayer player)
@@ -46,16 +59,27 @@ public class SwiftnessPotion: IItem
     {
         ArgumentNullException.ThrowIfNull(gameTime);
         ArgumentNullException.ThrowIfNull(player);
-        if (!IsActive)
+
+        float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        if (IsActive)
         {
-            return;
+             _displayTimer -= elapsed;
+
+            if (_displayTimer <= 0f)
+            {
+                IsActive = false;
+            }
         }
 
-        _timer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        if (_timer <= 0f)
+        if (IsOnCooldown)
         {
-            IsActive = false;
+            _cooldownTimer -= elapsed;
+
+            if(_displayTimer <= 0f)
+            {
+                IsActive = false;
+            }
         }
     }
     public void Draw(SpriteBatch spriteBatch, IPlayer player)
