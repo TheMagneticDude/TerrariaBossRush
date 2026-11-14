@@ -193,7 +193,7 @@ public class Player : IPlayer
             _hotbar.SelectSlot(_hotbar.SelectedSlot + 1, this);
         }
 
-        if (Input.IsNewPress(KeyAction.UseItem))
+        if (Input.IsNewPress(KeyAction.UseItem) && _hotbar.SelectedEntry is ItemHotbarEntry)
         {
             _hotbar.UseSelected(this);
         }
@@ -247,7 +247,8 @@ public class Player : IPlayer
         Hitbox.Update(Position);
         SpecialHitbox.Update(Position);
 
-        if (_equippedWeapon != null && Input.IsNewPress(KeyAction.Attack))
+        if (_hotbar.SelectedEntry is WeaponHotbarEntry && _equippedWeapon != null 
+        && Input.IsNewPress(KeyAction.Attack))
         {
             bool canAttack = !_equippedWeapon.IsAttacking;
 

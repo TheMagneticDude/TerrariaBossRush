@@ -43,7 +43,6 @@ public class Game1 : Core
     private UIManager _uiManager;
     private Texture2D _statusEffectPixel;
     private StatusEffectVisuals _statusEffectVisuals;
-    private HotbarUI _hotbarUI;
     private CombatManager _combatManager;
     private RoomManager _roomManager;
 
@@ -97,10 +96,10 @@ public class Game1 : Core
             new WeaponHotbarEntry("Wooden Sword", WeaponFactory.Instance.CreateSword(), false),
             new WeaponHotbarEntry("Magic Dagger", WeaponFactory.Instance.CreateDagger(_projectileManager), false),
             new WeaponHotbarEntry("Bow", WeaponFactory.Instance.CreateBow(_projectileManager), false),
-            ItemFactory.Instance.CreateHealthPot(),
-            ItemFactory.Instance.CreateRecallPot(),
-            ItemFactory.Instance.CreateManaPot(),
-            ItemFactory.Instance.CreateSwiftPot(),
+            new ItemHotbarEntry("Health Potion", ItemFactory.Instance.CreateHealthPot()),
+            new ItemHotbarEntry("Recall Potion", ItemFactory.Instance.CreateRecallPot()),
+            new ItemHotbarEntry("Mana Potion", ItemFactory.Instance.CreateManaPot()),
+            new ItemHotbarEntry("Swiftness Potion", ItemFactory.Instance.CreateSwiftPot()),
             new WeaponHotbarEntry("Staff", WeaponFactory.Instance.CreateStaff(_projectileManager), false),
             new WeaponHotbarEntry("Yo-yo", WeaponFactory.Instance.CreateYoyo(), false),
             new WeaponHotbarEntry("Whip", WeaponFactory.Instance.CreateWhip(), false),
