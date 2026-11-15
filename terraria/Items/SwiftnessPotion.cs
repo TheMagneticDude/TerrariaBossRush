@@ -9,8 +9,8 @@ namespace terraria.Items;
 public class SwiftnessPotion: IItem
 {
     private const float DisplayDuration = 0.5f;
-    private const float CooldownDuration = 10f;
-    private const float SwiftnessDuration = 10f;
+    private const float CooldownDuration = 15f;
+    private const float SwiftnessDuration = 15f;
 
     private Vector2 _potPosition;
 
@@ -76,9 +76,9 @@ public class SwiftnessPotion: IItem
         {
             _cooldownTimer -= elapsed;
 
-            if(_displayTimer <= 0f)
+            if (_cooldownTimer < 0f)
             {
-                IsActive = false;
+                _cooldownTimer = 0f;
             }
         }
     }
@@ -128,5 +128,12 @@ public class SwiftnessPotion: IItem
             SpriteEffects.None,
             0f
         );
+    }
+    public float CooldownProgress
+    {
+        get
+        {
+            return _cooldownTimer / CooldownDuration;
+        }
     }
 }

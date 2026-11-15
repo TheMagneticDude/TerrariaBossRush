@@ -59,7 +59,10 @@ public class ItemHotbarEntry : IHotbarEntry
                 _cooldownOverlay.SetData(new[] { Color.White });
             }
 
-            spriteBatch.Draw(_cooldownOverlay, slot, new Color(0, 0, 0, 90));
+            int overlayHeight = (int)(slot.Height * _item.CooldownProgress);
+            Rectangle overlayRectangle = new Rectangle(slot.X, slot.Bottom-overlayHeight, slot.Width, overlayHeight);
+
+            spriteBatch.Draw(_cooldownOverlay, overlayRectangle, new Color(0, 0, 0, 90));
         }
     }
 

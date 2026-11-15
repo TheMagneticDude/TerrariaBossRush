@@ -226,6 +226,18 @@
 /processorParam:TextureFormat=Color
 /build:UI/star.png
 
+#begin UI/swiftnessIcon.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=True
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:UI/swiftnessIcon.png
+
 #begin Weapons/AmethystStaff.png
 /importer:TextureImporter
 /processor:TextureProcessor

@@ -9,6 +9,7 @@ public interface IItem
 {
     bool IsActive { get; }
     bool IsOnCooldown { get; }
+    float CooldownProgress { get; }
     void Use(IPlayer player);
     void Update(GameTime gameTime, IPlayer player);
     void Draw(SpriteBatch spriteBatch, IPlayer player);

@@ -170,6 +170,10 @@ public class Player : IPlayer
     {
         return _mana.UseMana(amount);
     }
+    public bool HasSwiftness
+    {
+        get { return _swiftnessTimer > 0f; }
+    }
     private void HandleHotbarInput()
     {
         for (int slot = 0; slot < Math.Min(10, _hotbar.Count); slot++)

@@ -74,9 +74,9 @@ public class HealthPotion : IItem
         {
             _cooldownTimer -= elapsed;
 
-            if(_displayTimer <= 0f)
+            if (_cooldownTimer < 0f)
             {
-                IsActive = false;
+                _cooldownTimer = 0f;
             }
         }
     }
@@ -127,5 +127,12 @@ public class HealthPotion : IItem
             SpriteEffects.None,
             0f
         );
+    }
+    public float CooldownProgress
+    {
+        get
+        {
+            return _cooldownTimer / CooldownDuration;
+        }
     }
 }

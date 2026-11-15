@@ -40,4 +40,6 @@ public interface IPlayer : IEntity
     int CurrentMana { get; }
     int MaxMana { get; }
     bool UseMana(int amount);
+
+    bool HasSwiftness { get; }
 }
