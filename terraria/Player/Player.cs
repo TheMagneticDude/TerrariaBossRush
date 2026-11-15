@@ -65,9 +65,6 @@ public class Player : IPlayer
     private const float _jumpStrength = -16f;
     private const float _honeySpeedModifier = 0.5f;
     private const int _hazardContactDamage = 10;
-
-    private float _swiftnessMultiplier = 1f;
-    private float _swiftnessTimer = 0f;
     private bool _isTouchingHoney;
 
     private bool _facingRight = true;
@@ -81,6 +78,7 @@ public class Player : IPlayer
     private IWeapon _equippedWeapon;
     private readonly HealthComponent _health = new HealthComponent(TerrariaStats.PlayerHealth);
     private readonly ManaComponent _mana = new ManaComponent(TerrariaStats.PlayerMana);
+    private readonly PlayerBuffs _buffs = new PlayerBuffs();
 
     public int CurrentHealth => _health.CurrentHealth;
     public int MaxHealth => _health.MaxHealth;
@@ -88,6 +86,7 @@ public class Player : IPlayer
     public int CurrentMana => _mana.CurrentMana;
     public int MaxMana => _mana.MaxMana;
     public bool IsDead => _health.IsDead;
+    public bool HasSwiftness => _buffs.HasSwiftness;
     public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
@@ -132,8 +131,6 @@ public class Player : IPlayer
         {
             DEBUG.ShowHitboxes = !DEBUG.ShowHitboxes;
         }
-
-
         
     }
 
@@ -170,10 +167,6 @@ public class Player : IPlayer
     {
         return _mana.UseMana(amount);
     }
-    public bool HasSwiftness
-    {
-        get { return _swiftnessTimer > 0f; }
-    }
     private void HandleHotbarInput()
     {
         for (int slot = 0; slot < Math.Min(10, _hotbar.Count); slot++)
@@ -205,8 +198,7 @@ public class Player : IPlayer
 
     public void Swiftness(float duration)
     {
-        _swiftnessMultiplier = 1.5f;
-        _swiftnessTimer = duration;
+        _buffs.Swiftness(duration);
     }
     
 
@@ -215,6 +207,7 @@ public class Player : IPlayer
         ArgumentNullException.ThrowIfNull(gameTime);
 
         _health.Update(gameTime);
+        _buffs.Update(gameTime);
 
         if (Input.IsNewPress(KeyAction.Reset))
         {
@@ -232,17 +225,6 @@ public class Player : IPlayer
         {
             Velocity = Vector2.Zero;
             return;
-        }
-
-        if (_swiftnessTimer > 0f)
-        {
-            _swiftnessTimer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-            if (_swiftnessTimer <= 0f)
-            {
-                _swiftnessTimer = 0f;
-                _swiftnessMultiplier = 1f;
-            }
         }
 
         HandleHotbarInput();
@@ -299,7 +281,7 @@ public class Player : IPlayer
             (Input.IsPressed(KeyAction.MoveRight) ? 1f : 0f) -
             (Input.IsPressed(KeyAction.MoveLeft) ? 1f : 0f);
 
-        Velocity = new Vector2(componentX * _movementSpeed * _swiftnessMultiplier *
+        Velocity = new Vector2(componentX * _movementSpeed * _buffs.MovementMultiplier *
         (_isTouchingHoney ? _honeySpeedModifier : 1f), Velocity.Y);
 
         if (Velocity.X > 0)
