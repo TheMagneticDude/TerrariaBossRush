@@ -7,7 +7,7 @@
 - Adam Rehan
 - Jacob Su
 
-Github page: [CSE3902](https://github.com/TheMagneticDude/CSE3902.git)
+Github page: [CSE3902](https://github.com/TheMagneticDude/TerrariaBossRush.git)
 
 ## Summary
 
@@ -17,7 +17,7 @@ As of Sprint 2, this program includes a basic terraria guide character with move
 
 As of Sprint 3, this program includes three different boss levels that you can swap between with J and K. Hotbar UI has been added along with player, block, and boss collisions. The player and enemies can now take damage and die as well. Special blocks now exist and have functions like causing player damage or slowing the player down.
 
-## Game Controls
+## Default Game Controls
 
 | Action | Keyboard / Mouse |
 | --- | --- |
@@ -37,18 +37,19 @@ As of Sprint 3, this program includes three different boss levels that you can s
 | Swap to Frost Staff | `0`, Numpad `0` |
 | Use Potions | Right Mouse Button |
 | Reset | `R` |
-| Exit | `Q` or `Esc` |
 | Show Hitboxes | `F3` + `G` |
 | Next Level | `K` |
 | Previous Level | `J` |
 
+| Menu | `Esc` |
+
+- Keybinds can be changed under Menu -> Options
+
+
 - Run project from root with: dotnet run --project terraria
 
 ## Known Bugs
-
-- Health and Recall potions appear simultaneously when pressing 4 and 5 together
-- Weapons can still be used while using Health or Recall potions
-- Daggers appear oddly in hand
+- Bosses with large hitboxes and high velocity can clip through 1 wide walls  
 
 ## Extra Tools/Processes
 
