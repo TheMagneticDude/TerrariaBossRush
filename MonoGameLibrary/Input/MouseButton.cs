@@ -1,4 +1,7 @@
 namespace MonoGameLibrary.Input;
+
+using System;
+using System.Reflection.Metadata.Ecma335;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 public enum MouseButton
@@ -208,6 +211,19 @@ public class MouseInfo
             CurrentState.XButton2
         );
     }
+
+
+    public string GetMouseButtonCode(MouseButton mb)=> mb switch
+    {
+        MouseButton.Left => "Left",
+        MouseButton.Middle => "Middle",
+        MouseButton.Right => "Right",
+        MouseButton.ScrollDown => "ScrollDown",
+        MouseButton.ScrollUp => "ScrollUp",
+        MouseButton.XButton1 => "Side Button 1",
+        MouseButton.XButton2 => "Side Button 2",
+        _ => "None"
+    };
 
 
 }   

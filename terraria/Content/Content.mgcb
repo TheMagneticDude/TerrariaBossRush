@@ -23,6 +23,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Background/Forestbackground.png
 
 #begin Blocks/blocks.png
@@ -35,6 +36,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Blocks/blocks.png
 
 #begin Blocks/blocks.xml
@@ -50,6 +52,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Blocks/SpecialBlocks.png
 
 #begin Blocks/SpecialBlocks.xml
@@ -65,6 +68,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Bosses/Cthulhu.png
 
 #begin Bosses/Cthulhu.xml
@@ -80,6 +84,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Bosses/QueenBee.png
 
 #begin Bosses/QueenBee.xml
@@ -98,6 +103,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Bosses/slimes.png
 
 #begin Items/healthPotion.png
@@ -110,6 +116,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Items/healthPotion.png
 
 #begin Items/manaPotion.png
@@ -122,6 +129,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Items/manaPotion.png
 
 #begin Items/recallPotion.png
@@ -134,6 +142,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Items/recallPotion.png
 
 #begin Items/swiftnessPotion.png
@@ -146,24 +155,28 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Items/swiftnessPotion.png
 
 #begin Music/Overworld/Music-Overworld_Day.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
+/processorParam:Version=3.8.5.1
 /build:Music/Overworld/Music-Overworld_Day.mp3
 
 #begin Music/Overworld/Music-Overworld_Night.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
+/processorParam:Version=3.8.5.1
 /build:Music/Overworld/Music-Overworld_Night.mp3
 
 #begin Music/Overworld/Music-Underground.mp3
 /importer:Mp3Importer
 /processor:SongProcessor
 /processorParam:Quality=Best
+/processorParam:Version=3.8.5.1
 /build:Music/Overworld/Music-Underground.mp3
 
 #begin Player/Player.png
@@ -176,6 +189,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Player/Player.png
 
 #begin Player/Player.xml
@@ -190,6 +204,13 @@
 #begin Rooms/SlimeRoom.csv
 /copy:Rooms/SlimeRoom.csv
 
+#begin SFX/whip-get-back-to-work.mp3
+/importer:Mp3Importer
+/processor:SoundEffectProcessor
+/processorParam:Quality=Best
+/processorParam:Version=3.8.5.1
+/build:SFX/whip-get-back-to-work.mp3;SFX/whip.mp3
+
 #begin UI/empty_heart.png
 /importer:TextureImporter
 /processor:TextureProcessor
@@ -200,6 +221,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:UI/empty_heart.png
 
 #begin UI/heart.png
@@ -212,6 +234,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:UI/heart.png
 
 #begin UI/star.png
@@ -224,6 +247,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:UI/star.png
 
 #begin UI/swiftnessIcon.png
@@ -236,6 +260,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:UI/swiftnessIcon.png
 
 #begin Weapons/AmethystStaff.png
@@ -248,6 +273,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/AmethystStaff.png
 
 #begin Weapons/LeatherWhip.png
@@ -260,6 +286,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/LeatherWhip.png
 
 #begin Weapons/Projectiles/AmethystBolt.png
@@ -272,6 +299,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/Projectiles/AmethystBolt.png
 
 #begin Weapons/Projectiles/LeatherWhip.png
@@ -284,6 +312,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/Projectiles/LeatherWhip.png
 
 #begin Weapons/Projectiles/Magic_Dagger.png
@@ -296,10 +325,24 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/Projectiles/Magic_Dagger.png
 
 #begin Weapons/Projectiles/Magic_Dagger.xml
 /copy:Weapons/Projectiles/Magic_Dagger.xml
+
+#begin Weapons/Projectiles/QueenBeeStinger.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyColor=255,0,255,255
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
+/build:Weapons/Projectiles/QueenBeeStinger.png
 
 #begin Weapons/Projectiles/WoodenArrow.png
 /importer:TextureImporter
@@ -311,6 +354,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/Projectiles/WoodenArrow.png
 
 #begin Weapons/Projectiles/WoodenYoyo.png
@@ -323,6 +367,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/Projectiles/WoodenYoyo.png
 
 #begin Weapons/Sword.png
@@ -335,6 +380,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/Sword.png
 
 #begin Weapons/Sword.xml
@@ -350,6 +396,7 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/processorParam:Version=3.8.5.1
 /build:Weapons/WoodenBow.png
 
 #begin Weapons/WoodenYoyo.png
@@ -362,17 +409,6 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
-/build:Weapons/Projectiles/LeatherWhip.png
-
-#begin Weapons/Projectiles/QueenBeeStinger.png
-/importer:TextureImporter
-/processor:TextureProcessor
-/processorParam:ColorKeyEnabled=False
-/processorParam:GenerateMipmaps=False
-/processorParam:PremultiplyAlpha=True
-/processorParam:ResizeToPowerOfTwo=False
-/processorParam:MakeSquare=False
-/processorParam:TextureFormat=Color
-/build:Weapons/Projectiles/QueenBeeStinger.png
+/processorParam:Version=3.8.5.1
 /build:Weapons/WoodenYoyo.png
 

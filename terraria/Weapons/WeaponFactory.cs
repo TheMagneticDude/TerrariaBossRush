@@ -1,4 +1,6 @@
 using System;
+
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using terraria.Combat;
@@ -19,6 +21,10 @@ public class WeaponFactory
     private Texture2D _yoyoHeadTexture;
     private Texture2D _whipSegmentsTexture;
     private Texture2D _stringTexture;
+
+    private SoundEffect _WhipSFX; //will probably consolidate into a class later
+
+
 
     public static WeaponFactory Instance { get; } = new WeaponFactory();
 
@@ -41,6 +47,7 @@ public class WeaponFactory
         _boltTexture = content.Load<Texture2D>("Weapons/Projectiles/AmethystBolt");
         _yoyoHeadTexture = content.Load<Texture2D>("Weapons/Projectiles/WoodenYoyo");
         _whipSegmentsTexture = content.Load<Texture2D>("Weapons/Projectiles/LeatherWhip");
+        _WhipSFX = content.Load<SoundEffect>("SFX/whip");
     }
 
     public Sword CreateSword()
@@ -70,7 +77,7 @@ public class WeaponFactory
 
     public Whip CreateWhip()
     {
-        return new Whip(_whipTexture, _whipSegmentsTexture);
+        return new Whip(_whipTexture, _whipSegmentsTexture, _WhipSFX);
     }
 
     public Bow CreateFireBow(ProjectileManager projectiles)

@@ -17,6 +17,7 @@ using terraria.World;
 using terraria.Rooms;
 using terraria.UI;
 using static terraria.Constants;
+using Microsoft.Xna.Framework.Audio;
 
 namespace terraria;
 
