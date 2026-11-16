@@ -1,28 +1,13 @@
-using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
-using Microsoft.Xna.Framework.Media;
 using MonoGameLibrary;
-using MonoGameLibrary.Graphics;
-using MonoGameLibrary.Input;
-using terraria.Blocks;
-using terraria.Combat;
-using terraria.Bosses;
-using terraria.Hotbar;
-using terraria.Items;
-using terraria.Music;
-using terraria.Players;
-using terraria.Projectiles;
-using terraria.Weapons;
-using terraria.World;
-using terraria.Rooms;
-using terraria.UI;
 using static terraria.Constants;
 
 namespace terraria;
 
 public class Game1 : Core
 {
+    private GameplayState _gameplay;
     //================Boss init===========================
     private BossManager _bossManager;
 
@@ -59,13 +44,8 @@ public class Game1 : Core
 
     protected override void Initialize()
     {
-        _inputManager = new InputManager();
-        _p1Input = new PlayerInput(_inputManager);
-        _worldHandler = new WorldHandler(WindowWidth, WindowHeight, _backgroundTextures);
-        _screenRectangle = new Rectangle(0, 0, WindowWidth, WindowHeight);
-
-        // Core.Initialize triggers LoadContent in this project, so all fields
-        // needed by LoadContent must be initialized before this call.
+        // Core.Initialize triggers LoadContent, so create the state first.
+        _gameplay = new GameplayState(Exit);
         base.Initialize();
         blankTexture = new Texture2D(GraphicsDevice, 1, 1);
         DEBUG.LoadContent(GraphicsDevice, blankTexture);
@@ -73,6 +53,8 @@ public class Game1 : Core
 
     protected override void LoadContent()
     {
+        // Core assigns its GraphicsDevice after base.Initialize returns.
+        _gameplay.LoadContent(Content, Graphics.GraphicsDevice);
         _statusEffectPixel = new Texture2D(Graphics.GraphicsDevice, 1, 1);
         _statusEffectPixel.SetData(new[] { Color.White });
         _statusEffectVisuals = new StatusEffectVisuals(_statusEffectPixel);
@@ -138,76 +120,20 @@ public class Game1 : Core
 
     protected override void UnloadContent()
     {
-        _statusEffectPixel?.Dispose();
+        _gameplay?.Dispose();
+        blankTexture?.Dispose();
         base.UnloadContent();
     }
 
     protected override void Update(GameTime gameTime)
     {
-
         base.Update(gameTime);
-
-        _music.Update();
-
-        // Input should update before anything reads it.
-        _inputManager.Update(gameTime);
-        _p1Input.Update(gameTime);
-        _roomManager.Update(_p1Input, gameTime);
-
-        _bossManager.UpdateAll(gameTime, _player1.Position);
-
-        // Player may spawn projectiles during this update.
-        _player1.Update(gameTime);
-        _combatManager.Update(gameTime, _player1,_bossManager.Bosses, _roomManager.WorldMesh);
-
-        _worldHandler.Update(_player1.Position);
-
-        //exit handler
-        if (_p1Input.IsNewPress(KeyAction.Exit))
-        {
-            Exit();
-        }
+        _gameplay.Update(gameTime);
     }
 
     protected override void Draw(GameTime gameTime)
     {
-        GraphicsDevice.Clear(Color.CornflowerBlue);
-
-
-        SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null, null);
-        // Draw using a source rectangle larger than the texture dimensions to trigger tiling
-        Rectangle destinationRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000);
-        Rectangle sourceRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000); 
-
-        SpriteBatch.Draw(_backgroundTextures[_worldHandler.BackgroundID], destinationRectangle, sourceRectangle, Color.White);
-        SpriteBatch.End();
-
-
-
-        SpriteBatch.Begin(
-            samplerState: SamplerState.PointClamp,
-            transformMatrix: _worldHandler.GetTransformMatrix()
-        );
-
-
-        _bossManager.DrawAll(SpriteBatch, _statusEffectVisuals);
-
-        _player1.Draw(SpriteBatch);
-        _projectileManager.Draw(SpriteBatch);
-        _roomManager.Draw(SpriteBatch);
-
-        SpriteBatch.End();
-
-        SpriteBatch.Begin(
-        samplerState: SamplerState.PointClamp
-        );
-
-        _uiManager.Draw(SpriteBatch, _player1);
-
-        SpriteBatch.End();
-
-        
-
+        _gameplay.Draw(GraphicsDevice, SpriteBatch);
         base.Draw(gameTime);
     }
 }

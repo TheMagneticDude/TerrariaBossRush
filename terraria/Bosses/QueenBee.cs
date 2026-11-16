@@ -7,6 +7,8 @@ using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary.Graphics;
 using terraria.Bosses.States;
 using terraria.Entity;
+using terraria.Players;
+using terraria.Projectiles;
 using static terraria.Constants;
 //temp
 using MonoGameLibrary.Input;
@@ -40,6 +42,7 @@ public class QueenBee : IBoss
     }
     public bool IsGrounded { get; set; }
 
+    private readonly ProjectileManager _projectiles;
     private AnimatedSprite _sprite;
 
     private TextureAtlas _atlas;
@@ -54,8 +57,9 @@ public class QueenBee : IBoss
         _state.Enter();
     }
 
-    public QueenBee(AnimatedSprite sprite, TextureAtlas atlas, IEntity target = null)
+    public QueenBee(AnimatedSprite sprite, TextureAtlas atlas, ProjectileManager projectiles, IEntity target = null)
     {
+        _projectiles = projectiles ?? throw new ArgumentNullException(nameof(projectiles));
         _sprite = sprite;
         _atlas = atlas;
         Position = new Vector2(1100, 400);
@@ -66,6 +70,27 @@ public class QueenBee : IBoss
         ChangeState(new QueenBeeIdleState(this));
 
         _sprite.CenterOrigin();
+    }
+
+    public Vector2 TargetCenter => Target?.Hitbox.BoundingBox.Center.ToVector2() ?? TargetPos;
+
+    public void FireStinger()
+    {
+        if (Health.IsDead || Target == null || Target is IPlayer { IsDead: true })
+        {
+            return;
+        }
+
+        Vector2 spawnPosition = Position + new Vector2(0, _sprite.Height * 0.35f);
+        Vector2 direction = TargetCenter - spawnPosition;
+        if (direction.LengthSquared() < 0.001f)
+        {
+            return;
+        }
+
+        direction.Normalize();
+        const float stingerSpeed = 420f; // Pixels per second; straight, non-homing flight.
+        _projectiles.AddProjectile(ProjectileFactory.Instance.CreateStinger(spawnPosition, direction * stingerSpeed));
     }
 
     public void SetAnimation(string animationName)

@@ -1,35 +1,27 @@
-using Microsoft.Xna.Framework;
-using Microsoft.Xna.Framework.Graphics;
-using MonoGameLibrary;
-using MonoGameLibrary.Graphics;
+using terraria.Combat;
 using terraria.Hotbar;
 using terraria.Weapons;
 using terraria.Collision;
-using terraria.Combat;
 using terraria.Entity;
-
-
-namespace terraria.Players;
 using static terraria.Constants;
 
-
+namespace terraria.Players;
 
 public interface IPlayer : IEntity
 {
-    public ICollider SpecialHitbox {get;set;}
-    public PlayerMovementEffects MovementEffects {get;set;}
+    ICollider SpecialHitbox { get; }
+    void SetBlockContactEffect(PlayerMovementEffects effect);
     bool IsDead { get; }
     void TakeDamage(int damage);
+    bool ReceiveHit(AttackDefinition attack);
     void Heal(int amount);
 
     void RestoreMana(int amount);
     void Swiftness(float duration);
     IWeapon EquippedWeapon { get; }
     bool FacingRight { get; }
-    int SelectedHotbarSlot { get; }
 
     PlayerHotbar Hotbar { get; }
-    IHotbarEntry SelectedHotbarItem { get; }
 
     void EquipWeapon(IWeapon weapon);
     void UnequipWeapon();

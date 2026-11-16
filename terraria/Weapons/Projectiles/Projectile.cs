@@ -8,6 +8,7 @@ namespace terraria.Projectiles;
 
 public abstract class Projectile : IProjectile
 {
+    public virtual CombatTeam Team => CombatTeam.Player;
     public ICollider Hitbox { get; protected set; }
     public AttackDefinition AttackData { get; }
     public int Damage => AttackData.Damage;

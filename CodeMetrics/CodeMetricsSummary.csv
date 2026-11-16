@@ -1,0 +1,7 @@
+Sprint,Project,Type count,Member row count,Mean maintainability index,Mean cyclomatic complexity,Mean class coupling,Maximum inheritance depth,Mean source lines,Mean executable lines
+2,Game,54,420,89.815,7.259,7.278,3,24.611,12.889
+2,MonoGameLibrary,11,127,86.636,14.455,7.545,2,36.636,18.273
+3,Game,76,984,85.632,12.776,8.303,3,65.474,18.921
+3,MonoGameLibrary,14,260,87.214,20.143,6.214,2,101.143,18.071
+4,Game,94,1161,83.606,12.191,8.585,4,58.213,18.16
+4,MonoGameLibrary,14,263,84.929,18.714,6.214,2,99.714,18.143

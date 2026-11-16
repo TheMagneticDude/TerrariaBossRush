@@ -7,6 +7,7 @@ namespace terraria.Projectiles;
 
 public interface IProjectile
 {
+    CombatTeam Team { get; }
     ICollider Hitbox { get; }
     bool IsActive { get; }
     Vector2 Position { get; }

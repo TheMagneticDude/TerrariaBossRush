@@ -362,5 +362,17 @@
 /processorParam:ResizeToPowerOfTwo=False
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
+/build:Weapons/Projectiles/LeatherWhip.png
+
+#begin Weapons/Projectiles/QueenBeeStinger.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Weapons/Projectiles/QueenBeeStinger.png
 /build:Weapons/WoodenYoyo.png
 

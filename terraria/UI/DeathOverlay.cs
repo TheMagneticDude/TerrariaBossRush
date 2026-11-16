@@ -48,19 +48,34 @@ public static class DeathOverlay
         for (int index = 0; index < text.Length; index++)
         {
             if (!Glyphs.TryGetValue(text[index], out string[] rows)) continue;
-            for (int row = 0; row < rows.Length; row++)
-            {
-                int column = 0;
-                while (column < rows[row].Length)
-                {
-                    if (rows[row][column] != '1') { column++; continue; }
-                    int start = column;
-                    while (column < rows[row].Length && rows[row][column] == '1') column++;
-                    runs.Add(new Rectangle(index * 6 + start, row, column - start, 1));
-                }
-            }
+            AddGlyphGeometry(runs, rows, index * 6);
         }
         return runs.ToArray();
+    }
+
+    private static void AddGlyphGeometry(List<Rectangle> runs, string[] rows, int x)
+    {
+        for (int row = 0; row < rows.Length; row++)
+        {
+            AddRowGeometry(runs, rows[row], x, row);
+        }
+    }
+
+    private static void AddRowGeometry(List<Rectangle> runs, string row, int x, int y)
+    {
+        int column = 0;
+        while (column < row.Length)
+        {
+            if (row[column] != '1')
+            {
+                column++;
+                continue;
+            }
+
+            int start = column;
+            while (column < row.Length && row[column] == '1') column++;
+            runs.Add(new Rectangle(x + start, y, column - start, 1));
+        }
     }
 
     private static void DrawCenteredText(SpriteBatch spriteBatch, Texture2D pixel,
