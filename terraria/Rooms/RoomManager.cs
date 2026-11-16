@@ -422,18 +422,18 @@ public class RoomManager
     {
         // Use the resolved position, including a one-pixel probe below the feet.
         _player.SpecialHitbox.Update(_player.Position);
-        _player.MovementEffects = PlayerMovementEffects.None;
+        PlayerMovementEffects effect = PlayerMovementEffects.None;
         foreach(SpecialBlock sb in _specialBlocks)
         {
             if (_player.SpecialHitbox.Intersects(sb.Hitbox))
             {
-                if (_player.MovementEffects != PlayerMovementEffects.Burning)
+                if (effect != PlayerMovementEffects.Burning)
                 {
-                    _player.MovementEffects = sb.MovementEffect;
+                    effect = sb.MovementEffect;
                 }
             }
         }
-        
+        _player.SetBlockContactEffect(effect);
     }
 
     public void Update(PlayerInput input, GameTime gameTime)

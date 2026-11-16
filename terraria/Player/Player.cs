@@ -9,8 +9,8 @@ using terraria.StateMachines;
 using terraria.Weapons;
 using terraria.Collision;
 using terraria.UI;
+using terraria.Players.States;
 using static terraria.Constants;
-
 
 namespace terraria.Players;
 
@@ -31,38 +31,26 @@ public class Player : IPlayer
         get { return _hotbar; }
     }
 
-    public int SelectedHotbarSlot
-    {
-        get { return _hotbar.SelectedSlot; }
-    }
-
-    public IHotbarEntry SelectedHotbarItem
-    {
-        get { return _hotbar.SelectedEntry; }
-    }
-
-    
-
     public Vector2 Position { get; set; }
     public Vector2 Velocity { get; set; }
 
     public ICollider Hitbox {get; set;}
-    public ICollider SpecialHitbox {get;set;}
+    public ICollider SpecialHitbox { get; }
 
     internal AnimatedSprite Sprite { get; private set; }
     public bool IsGrounded { get; set; }
-    public PlayerMovementEffects MovementEffects {get;set;}
+    private PlayerMovementEffects _blockContactEffect;
 
     public PlayerInput Input { get; private set; }
 
-    private TextureAtlas _atlas;
-    private StateMachine<PlayerState> _stateMachine;
- 
+    private readonly TextureAtlas _atlas;
+    private readonly StateMachine<PlayerState> _stateMachine;
+
     public IWeapon EquippedWeapon => _equippedWeapon;
 
     // Player physics values.
     private const float _movementSpeed = 5f;
-    private const float _jumpStrength = -16f;
+    internal const float JumpStrength = -16f;
     private const float _honeySpeedModifier = 0.5f;
     private const int _hazardContactDamage = 10;
     private bool _isTouchingHoney;
@@ -81,10 +69,9 @@ public class Player : IPlayer
     public int CurrentHealth => _health.CurrentHealth;
     public int MaxHealth => _health.MaxHealth;
     public bool IsDead => _health.IsDead;
-    public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
+    public Player(TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
-        Sprite = sprite;
         _atlas = atlas;
         _hotbar = hotbar;
         Input = input;
@@ -100,8 +87,6 @@ public class Player : IPlayer
         _stateMachine.AddState(PlayerState.Fall, new FallState(this));
         _stateMachine.AddState(PlayerState.UseItem, new UseItemState(this));
         _stateMachine.ChangeState(PlayerState.Idle);
-
-        MovementEffects = PlayerMovementEffects.None;
 
         _hotbar.SelectSlot(0, this);
 
@@ -125,20 +110,22 @@ public class Player : IPlayer
         {
             DEBUG.ShowHitboxes = !DEBUG.ShowHitboxes;
         }
-
-
-        
     }
 
-    public void HandleSpecialBlockEffect()
+    public void SetBlockContactEffect(PlayerMovementEffects effect)
     {
-        _isTouchingHoney = MovementEffects == PlayerMovementEffects.Slowed;
+        _blockContactEffect = effect;
+    }
 
-        if (MovementEffects == PlayerMovementEffects.Burning)
+    private void ApplyBlockContactEffect()
+    {
+        _isTouchingHoney = _blockContactEffect == PlayerMovementEffects.Slowed;
+
+        if (_blockContactEffect == PlayerMovementEffects.Burning)
         {
             TakeDamage(_hazardContactDamage);
         }
-        MovementEffects = PlayerMovementEffects.None;
+        _blockContactEffect = PlayerMovementEffects.None;
     }
 
     public void TakeDamage(int damage)
@@ -182,7 +169,6 @@ public class Player : IPlayer
             _hotbar.UseSelected(this);
         }
     }
-    
 
     public void Update(GameTime gameTime)
     {
@@ -190,15 +176,7 @@ public class Player : IPlayer
 
         _health.Update(gameTime);
 
-        if (Input.IsNewPress(KeyAction.Reset))
-        {
-            _health.Reset();
-        }
-
-        if (Input.IsNewPress(KeyAction.TakeDamage))
-        {
-            TakeDamage(10);
-        }
+        HandleHealthInput();
 
         // Temporary death behavior to stop movement
         if (IsDead)
@@ -209,9 +187,35 @@ public class Player : IPlayer
         HandleHotbarInput();
         HandleToggleDebugInput();
 
-        Hitbox.Update(Position);
-        SpecialHitbox.Update(Position);
+        UpdateColliders();
+        UpdateWeapon(gameTime);
 
+        _hotbar.Update(gameTime, this);
+
+        ApplyBlockContactEffect();
+
+        ApplyPhysics();
+
+        UpdateColliders();
+
+        UpdateAnimation(gameTime);
+    }
+
+    private void HandleHealthInput()
+    {
+        if (Input.IsNewPress(KeyAction.Reset))
+        {
+            _health.Reset();
+        }
+
+        if (Input.IsNewPress(KeyAction.TakeDamage))
+        {
+            TakeDamage(10);
+        }
+    }
+
+    private void UpdateWeapon(GameTime gameTime)
+    {
         if (_equippedWeapon != null && Input.IsNewPress(KeyAction.Attack))
         {
             _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
@@ -222,16 +226,16 @@ public class Player : IPlayer
         {
             _equippedWeapon.Update(gameTime, _facingRight);
         }
+    }
 
-        _hotbar.Update(gameTime, this);
-
-        HandleSpecialBlockEffect();
-
-        ApplyPhysics();
-
+    private void UpdateColliders()
+    {
         Hitbox.Update(Position);
         SpecialHitbox.Update(Position);
+    }
 
+    private void UpdateAnimation(GameTime gameTime)
+    {
         _stateMachine.Update((float)gameTime.ElapsedGameTime.TotalSeconds);
         // Movement states can change facing; use the same final pose as Draw.
         _equippedWeapon?.UpdateHitbox(Position, _facingRight);
@@ -243,8 +247,7 @@ public class Player : IPlayer
         Velocity = new Vector2(Velocity.X, Velocity.Y + Gravity);
     }
 
-
-    private void HandleHorizontalMovement()
+    internal void HandleHorizontalMovement()
     {
         float componentX =
             (Input.IsPressed(KeyAction.MoveRight) ? 1f : 0f) -
@@ -290,203 +293,7 @@ public class Player : IPlayer
         _hotbar.Draw(spriteBatch, this);
     }
 
-    //=====================================state implementations=====================================
+    internal void SetAnimation(string name) => Sprite = _atlas.CreateAnimatedSprite(name);
 
-    private class IdleState : IState
-    {
-        private Player _player;
-
-        public IdleState(Player player)
-        {
-            _player = player;
-        }
-
-        public void Enter()
-        {
-            _player.Sprite = _player._atlas.CreateAnimatedSprite("Idle");
-        }
-
-        public void Exit()
-        {
-        }
-
-        public void Update(float deltaTime)
-        {
-            _player.HandleHorizontalMovement();
-
-            if (!_player.IsGrounded)
-            {
-                _player._stateMachine.ChangeState(PlayerState.Fall);
-                return;
-            }
-
-            if (_player.Input.IsPressed(KeyAction.MoveUp))
-            {
-                _player._stateMachine.ChangeState(PlayerState.Jump);
-            }
-            else if (_player.Velocity.X != 0)
-            {
-                _player._stateMachine.ChangeState(PlayerState.Walk);
-            }
-        }
-    }
-
-    private class WalkState : IState
-    {
-        private Player _player;
-
-        public WalkState(Player player)
-        {
-            _player = player;
-        }
-
-        public void Enter()
-        {
-            _player.Sprite = _player._atlas.CreateAnimatedSprite("Walk");
-        }
-
-        public void Exit()
-        {
-        }
-
-        public void Update(float deltaTime)
-        {
-            _player.HandleHorizontalMovement();
-
-            if (!_player.IsGrounded)
-            {
-                _player._stateMachine.ChangeState(PlayerState.Fall);
-                return;
-            }
-
-            if (_player.Input.IsPressed(KeyAction.MoveUp))
-            {
-                _player._stateMachine.ChangeState(PlayerState.Jump);
-            }
-            else if (_player.Velocity.X == 0)
-            {
-                _player._stateMachine.ChangeState(PlayerState.Idle);
-            }
-        }
-    }
-
-    private class JumpState : IState
-    {
-        private Player _player;
-
-        public JumpState(Player player)
-        {
-            _player = player;
-        }
-
-        public void Enter()
-        {
-            _player.Sprite = _player._atlas.CreateAnimatedSprite("Jump");
-            _player.Velocity = new Vector2(_player.Velocity.X, _jumpStrength);
-            _player.IsGrounded = false;
-        }
-
-        public void Exit()
-        {
-        }
-
-        public void Update(float deltaTime)
-        {
-            // Allow horizontal control while in the air.
-            _player.HandleHorizontalMovement();
-
-            if (_player.Velocity.Y > 0)
-            {
-                _player._stateMachine.ChangeState(PlayerState.Fall);
-                return;
-            }
-            if(_player.IsGrounded)
-            {
-                if (_player.Velocity.X != 0)
-                {
-                    _player._stateMachine.ChangeState(PlayerState.Walk);
-                }
-                else
-                {
-                    _player._stateMachine.ChangeState(PlayerState.Idle);
-                }
-            }
-        }
-    }
-
-    private class FallState : IState
-    {
-        private Player _player;
-
-        public FallState(Player player)
-        {
-            _player = player;
-        }
-
-        public void Enter()
-        {
-            _player.Sprite = _player._atlas.CreateAnimatedSprite("Fall");
-        }
-
-        public void Exit()
-        {
-        }
-
-        public void Update(float deltaTime)
-        {
-            // Allow horizontal control while in the air.
-            _player.HandleHorizontalMovement();
-
-            if (_player.IsGrounded)
-            {
-                if (_player.Velocity.X != 0)
-                {
-                    _player._stateMachine.ChangeState(PlayerState.Walk);
-                }
-                else
-                {
-                    _player._stateMachine.ChangeState(PlayerState.Idle);
-                }
-            }
-        }
-    }
-
-    private class UseItemState : IState
-    {
-        private Player _player;
-
-        public UseItemState(Player player)
-        {
-            _player = player;
-        }
-
-        public void Enter()
-        {
-            _player.Sprite = _player._atlas.CreateAnimatedSprite("UseItem");
-        }
-
-        public void Exit()
-        {
-        }
-
-        public void Update(float deltaTime)
-        {
-            //Move slower while attacking or using item
-            float attackSpeedModifier = 0.9f;
-            // Allow horizontal control
-            _player.HandleHorizontalMovement();
-            _player.Velocity = new Vector2(_player.Velocity.X * attackSpeedModifier, _player.Velocity.Y);
-            
-            {
-                if (_player.Velocity.X != 0)
-                {
-                    _player._stateMachine.ChangeState(PlayerState.Walk);
-                }
-                else
-                {
-                    _player._stateMachine.ChangeState(PlayerState.Idle);
-                }
-            }
-        }
-    }
+    internal void ChangeState(PlayerState state) => _stateMachine.ChangeState(state);
 }
