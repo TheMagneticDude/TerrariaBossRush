@@ -74,9 +74,8 @@ public class Player : IPlayer
     public int CurrentMana => _mana.CurrentMana;
     public int MaxMana => _mana.MaxMana;
     public bool IsDead => _health.IsDead;
-    public Player(TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     public bool HasSwiftness => _buffs.HasSwiftness;
-    public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
+    public Player(TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
         _atlas = atlas;
