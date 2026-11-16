@@ -1,0 +1,29 @@
+Code Quality Review
+
+Author of the code review: Adam Rehan
+Date of the code review: 11/16/26
+Sprint number: 4
+Name of the .cs files being reviewed: RoomManager.cs
+Author of the .cs files being reviewed: Nathan Cheng
+Number of minutes taken to complete the review: 20 minutes
+Specific comments on code quality: 
+
+        There is a high priority bug where the boss horizontal collision handling is unreachable, there are misplaced braces that make it so the boss never gets the position corrected.
+        The class has too many responsbilities, seperating mesh generation and collision handling would make it better for managing rooms.
+        Good functionality, just handles too much at the moment
+
+A hypothetical change to make to the game related to file being reviewed 
+and how the current implementation could or could not easily support that change:
+
+    Adding another room with a boss or other blocks is relatively easy, but changing spawn locations is currently hardcoded as well as moving onto the next room, this could eventually be not hard-coded.
+
+Code Readability Review
+
+Author of the code review: Adam Rehan
+Date of the code review: 11/16/26
+Sprint number: 4
+Name of the .cs file being reviewed: RoomManager.cs
+Author of the .cs file being reviewed: Nathan Cheng
+Number of minutes taken to complete the review: 10
+Specific comments on what is readable and what is not: 
+    Most names are good, simple typos like PreviosRoom, maybe making e fully expanded to entity etc. Right now I'd handle the misplaced brace. Other than those few typos, class is very readable!
