@@ -57,6 +57,7 @@ internal sealed class GameplayState : IDisposable
         _bossManager = new BossManager();
         _player1 = PlayerFactory.Create(content, _p1Input, _projectileManager);
         BossFactory.Instance.TargetPlayer = _player1;
+        BossFactory.Instance.Projectiles = _projectileManager;
         StartMusic(content);
         _uiManager = new UIManager(content);
         InitializeRooms();

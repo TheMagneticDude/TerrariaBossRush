@@ -32,7 +32,7 @@ public sealed class CombatManager
         _projectiles.Update(gameTime);
         TrackAttack(player.EquippedWeapon);
         CheckPlayerCollisions(player, bosses);
-        CheckProjectileCollisions(bosses, worldMesh);
+        CheckProjectileCollisions(player, bosses, worldMesh);
         _projectiles.RemoveInactive();
     }
 
@@ -92,7 +92,7 @@ public sealed class CombatManager
         boss.Health.ReceiveHit(weapon.AttackData);
     }
 
-    private void CheckProjectileCollisions(IReadOnlyList<IBoss> bosses,
+    private void CheckProjectileCollisions(IPlayer player, IReadOnlyList<IBoss> bosses,
         IReadOnlyList<CollisionSurface> worldMesh)
     {
         foreach (IProjectile projectile in _projectiles.Projectiles)
@@ -103,11 +103,32 @@ public sealed class CombatManager
             }
 
             CheckTerrainHit(projectile, worldMesh);
-            if (projectile.IsActive)
+            if (!projectile.IsActive)
+            {
+                continue;
+            }
+
+            if (projectile.Team == CombatTeam.Enemy)
+            {
+                CheckProjectilePlayerHit(projectile, player);
+            }
+            else if (projectile.Team == CombatTeam.Player)
             {
                 CheckProjectileEnemyHits(projectile, bosses);
             }
         }
+    }
+
+    private static void CheckProjectilePlayerHit(IProjectile projectile, IPlayer player)
+    {
+        if (player.IsDead || !projectile.Hitbox.Intersects(player.Hitbox))
+        {
+            return;
+        }
+
+        // ReceiveHit applies damage and effects together, respecting invulnerability.
+        player.ReceiveHit(projectile.AttackData);
+        projectile.Destroy();
     }
 
     private static void CheckTerrainHit(IProjectile projectile, IReadOnlyList<CollisionSurface> worldMesh)

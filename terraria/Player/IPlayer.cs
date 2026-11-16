@@ -1,3 +1,4 @@
+using terraria.Combat;
 using terraria.Hotbar;
 using terraria.Weapons;
 using terraria.Collision;
@@ -12,6 +13,7 @@ public interface IPlayer : IEntity
     void SetBlockContactEffect(PlayerMovementEffects effect);
     bool IsDead { get; }
     void TakeDamage(int damage);
+    bool ReceiveHit(AttackDefinition attack);
     void Heal(int amount);
     IWeapon EquippedWeapon { get; }
     bool FacingRight { get; }

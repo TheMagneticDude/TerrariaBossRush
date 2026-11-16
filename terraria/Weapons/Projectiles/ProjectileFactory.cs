@@ -10,6 +10,7 @@ namespace terraria.Projectiles;
 public class ProjectileFactory
 {
     private Texture2D _daggerTexture;
+    private Texture2D _stingerTexture;
 
     private static readonly ProjectileFactory instance = new ProjectileFactory();
 
@@ -30,6 +31,12 @@ public class ProjectileFactory
     {
         ArgumentNullException.ThrowIfNull(content);
         _daggerTexture = content.Load<Texture2D>("Weapons/Projectiles/Magic_Dagger");
+        _stingerTexture = content.Load<Texture2D>("Weapons/Projectiles/QueenBeeStinger");
+    }
+
+    public StingerProjectile CreateStinger(Vector2 position, Vector2 velocity)
+    {
+        return new StingerProjectile(_stingerTexture, position, velocity);
     }
 
     public DaggerProjectile CreateDagger(Vector2 position, Vector2 velocity)

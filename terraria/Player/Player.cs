@@ -137,6 +137,8 @@ public class Player : IPlayer
         }
     }
 
+    public bool ReceiveHit(AttackDefinition attack) => _health.ReceiveHit(attack);
+
     public void Heal(int amount)
     {
         _health.Heal(amount);
@@ -283,7 +285,7 @@ public class Player : IPlayer
         SpriteEffects effect =
             _facingRight ? SpriteEffects.FlipHorizontally : SpriteEffects.None;
 
-        HitFlash.Draw(spriteBatch, Sprite, Position, _health.IsHitFlashing, Sprite.Color, effect);
+        HitFlash.Draw(spriteBatch, Sprite, Position, _health.IsHitFlashing, _health.Effects.Tint(Sprite.Color), effect);
 
         if (_equippedWeapon != null)
         {

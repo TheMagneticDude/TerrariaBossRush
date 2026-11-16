@@ -10,6 +10,9 @@ public static class TerrariaStats
     public const int EyeSecondFormContact = 23;
     public const int QueenBeeHealth = 3400;
     public const int QueenBeeContact = 30;
+    public static readonly AttackDefinition QueenBeeStinger = new(22);
+    public static readonly AttackDefinition QueenBeePoisonStinger = new(22,
+        new StatusEffectDefinition(StatusEffectType.Poison, 10f, 2f));
     public static readonly AttackDefinition WoodenSword = new(7);
     public static readonly AttackDefinition MagicDagger = new(30);
     public static readonly AttackDefinition WoodenBow = new(4 + 5);

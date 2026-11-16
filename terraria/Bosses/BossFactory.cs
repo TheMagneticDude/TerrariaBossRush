@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework;
 using terraria.Entity;
+using terraria.Projectiles;
 using System.Collections.Generic;
 
 namespace terraria.Bosses;
@@ -16,6 +17,7 @@ public class BossFactory
     private TextureAtlas _slimeAtlas;
 
     public IEntity TargetPlayer { get; set; }
+    public ProjectileManager Projectiles { get; set; }
 
     private static BossFactory instance = new BossFactory();
     
@@ -47,7 +49,7 @@ public class BossFactory
 
             sprite.CenterOrigin();
 
-            return new QueenBee(sprite, _queenBeeAtlas, TargetPlayer);
+            return new QueenBee(sprite, _queenBeeAtlas, Projectiles, TargetPlayer);
     }
 
     public EyeOfCthulhu CreateCthulhu()

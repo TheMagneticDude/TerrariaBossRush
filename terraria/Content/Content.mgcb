@@ -314,3 +314,16 @@
 /processorParam:MakeSquare=False
 /processorParam:TextureFormat=Color
 /build:Weapons/Projectiles/LeatherWhip.png
+
+# Sprite: Re-Logic, via https://terraria.wiki.gg/wiki/Queen_Bee
+# https://terraria.wiki.gg/images/Queen_Bee%27s_Stinger.png
+#begin Weapons/Projectiles/QueenBeeStinger.png
+/importer:TextureImporter
+/processor:TextureProcessor
+/processorParam:ColorKeyEnabled=False
+/processorParam:GenerateMipmaps=False
+/processorParam:PremultiplyAlpha=True
+/processorParam:ResizeToPowerOfTwo=False
+/processorParam:MakeSquare=False
+/processorParam:TextureFormat=Color
+/build:Weapons/Projectiles/QueenBeeStinger.png

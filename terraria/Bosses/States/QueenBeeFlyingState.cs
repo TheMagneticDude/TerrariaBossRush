@@ -33,7 +33,7 @@ public class QueenBeeFlyingState: IBossState
 
         if (_timer >= 1)
         {
-            _queenBee.ChangeState(new QueenBeeIdleState(_queenBee));
+            _queenBee.ChangeState(new QueenBeeStingerState(_queenBee));
         }
     }
 
