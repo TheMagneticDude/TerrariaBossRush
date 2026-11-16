@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework;
 
 namespace terraria.Bosses.States;
 
-public class CthulhuPhase1State: IBossState
+public class CthulhuNormalState: IBossState
 {
     private EyeOfCthulhu _eye;
     private float _timer;
 
-    public CthulhuPhase1State(EyeOfCthulhu eye)
+    public CthulhuNormalState(EyeOfCthulhu eye)
     {
         _eye = eye;
     }
@@ -23,14 +23,13 @@ public class CthulhuPhase1State: IBossState
     public void Update(GameTime gameTime)
     {
         ArgumentNullException.ThrowIfNull(gameTime);
-        _eye.HandleRotation();//only stare into player's soul when in idle
+        _eye.HandleRotation();
         _timer += (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-        //timer to test states
         if (_timer >= 5)
         {
             _eye.HandleAttack(gameTime);
-            _eye.ChangeState(new CthulhuPhase2State(_eye));
+            _eye.ChangeState(new CthulhuAggroState(_eye));
         }
     }
 }

@@ -4,12 +4,12 @@ using Microsoft.Xna.Framework;
 
 namespace terraria.Bosses.States;
 
-public class CthulhuPhase2State: IBossState
+public class CthulhuAggroState: IBossState
 {
     private EyeOfCthulhu _eye;
     private float _timer;
 
-    public CthulhuPhase2State(EyeOfCthulhu eye)
+    public CthulhuAggroState(EyeOfCthulhu eye)
     {
         _eye = eye;
     }
@@ -27,12 +27,11 @@ public class CthulhuPhase2State: IBossState
 
         _timer += elapsed;
 
-        //timer to test states
         _eye.Position += new Vector2(-100 * elapsed, 0);
 
         if (_timer >= 1)
         {
-            _eye.ChangeState(new CthulhuPhase1State(_eye));
+            _eye.ChangeState(new CthulhuNormalState(_eye));
         }
     }
 

@@ -63,7 +63,7 @@ public class PlayerInput
             { KeyAction.SelectSlot8, new MultiBind(new TriggerKey(Keys.D8), new TriggerKey(Keys.NumPad8)) },
             { KeyAction.SelectSlot9, new MultiBind(new TriggerKey(Keys.D9), new TriggerKey(Keys.NumPad9)) },
             { KeyAction.SelectSlot10, new MultiBind(new TriggerKey(Keys.D0), new TriggerKey(Keys.NumPad0)) },
-            { KeyAction.UseItem, new MultiBind(new TriggerKey(MouseButton.Right)) },
+            { KeyAction.UseItem, new MultiBind(new TriggerKey(MouseButton.Left)) },
             { KeyAction.TakeDamage, new MultiBind(new TriggerKey(Keys.E)) },
             { KeyAction.Exit,      new MultiBind(new TriggerKey(Keys.Q), new TriggerKey(Keys.Escape)) },
             { KeyAction.Reset,     new MultiBind(new TriggerKey(Keys.R)) },

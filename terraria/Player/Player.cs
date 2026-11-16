@@ -77,10 +77,16 @@ public class Player : IPlayer
     // Weapon stuff.
     private IWeapon _equippedWeapon;
     private readonly HealthComponent _health = new HealthComponent(TerrariaStats.PlayerHealth);
+    private readonly ManaComponent _mana = new ManaComponent(TerrariaStats.PlayerMana);
+    private readonly PlayerBuffs _buffs = new PlayerBuffs();
 
     public int CurrentHealth => _health.CurrentHealth;
     public int MaxHealth => _health.MaxHealth;
+
+    public int CurrentMana => _mana.CurrentMana;
+    public int MaxMana => _mana.MaxMana;
     public bool IsDead => _health.IsDead;
+    public bool HasSwiftness => _buffs.HasSwiftness;
     public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
@@ -125,8 +131,6 @@ public class Player : IPlayer
         {
             DEBUG.ShowHitboxes = !DEBUG.ShowHitboxes;
         }
-
-
         
     }
 
@@ -154,6 +158,15 @@ public class Player : IPlayer
     {
         _health.Heal(amount);
     }
+
+    public void RestoreMana(int amount)
+    {
+        _mana.RestoreMana(amount);
+    }
+    public bool UseMana(int amount)
+    {
+        return _mana.UseMana(amount);
+    }
     private void HandleHotbarInput()
     {
         for (int slot = 0; slot < Math.Min(10, _hotbar.Count); slot++)
@@ -177,10 +190,15 @@ public class Player : IPlayer
             _hotbar.SelectSlot(_hotbar.SelectedSlot + 1, this);
         }
 
-        if (Input.IsNewPress(KeyAction.UseItem))
+        if (Input.IsNewPress(KeyAction.UseItem) && _hotbar.SelectedEntry is ItemHotbarEntry)
         {
             _hotbar.UseSelected(this);
         }
+    }
+
+    public void Swiftness(float duration)
+    {
+        _buffs.Swiftness(duration);
     }
     
 
@@ -189,10 +207,12 @@ public class Player : IPlayer
         ArgumentNullException.ThrowIfNull(gameTime);
 
         _health.Update(gameTime);
+        _buffs.Update(gameTime);
 
         if (Input.IsNewPress(KeyAction.Reset))
         {
             _health.Reset();
+            _mana.Reset();
         }
 
         if (Input.IsNewPress(KeyAction.TakeDamage))
@@ -206,16 +226,27 @@ public class Player : IPlayer
             Velocity = Vector2.Zero;
             return;
         }
+
         HandleHotbarInput();
         HandleToggleDebugInput();
 
         Hitbox.Update(Position);
         SpecialHitbox.Update(Position);
 
-        if (_equippedWeapon != null && Input.IsNewPress(KeyAction.Attack))
+        if (_hotbar.SelectedEntry is WeaponHotbarEntry && _equippedWeapon != null 
+        && Input.IsNewPress(KeyAction.Attack))
         {
-            _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
-            _stateMachine.ChangeState(PlayerState.UseItem);
+            bool canAttack = !_equippedWeapon.IsAttacking;
+
+            if (canAttack && _equippedWeapon is IManaWeapon manaWeapon)
+            {
+                canAttack = UseMana(manaWeapon.ManaCost);
+            }
+            if (canAttack)
+            {
+                _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
+                _stateMachine.ChangeState(PlayerState.UseItem);
+            }
         }
 
         if (_equippedWeapon != null)
@@ -250,7 +281,8 @@ public class Player : IPlayer
             (Input.IsPressed(KeyAction.MoveRight) ? 1f : 0f) -
             (Input.IsPressed(KeyAction.MoveLeft) ? 1f : 0f);
 
-        Velocity = new Vector2(componentX * _movementSpeed * (_isTouchingHoney ? _honeySpeedModifier : 1f), Velocity.Y);
+        Velocity = new Vector2(componentX * _movementSpeed * _buffs.MovementMultiplier *
+        (_isTouchingHoney ? _honeySpeedModifier : 1f), Velocity.Y);
 
         if (Velocity.X > 0)
         {
