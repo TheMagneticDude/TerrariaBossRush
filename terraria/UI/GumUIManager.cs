@@ -9,6 +9,7 @@ using terraria.Players;
 using Gum.Forms.Controls;
 
 using static terraria.Constants;
+using Gum.Forms.DefaultVisuals.V3;
 
 
 namespace terraria.UI;
@@ -28,6 +29,7 @@ public class GumUIManager
     private readonly Action _onExitGame;
 
     public UIScene CurrentScene { get; private set; } = UIScene.StartMenu;
+    public bool GameStarted {get;set;} = false;
     private UIScene _previousScene = UIScene.StartMenu;
 
     private FrameworkElement _startMenuRoot;
@@ -83,7 +85,7 @@ public class GumUIManager
         panel.AddChild(title);
 
         var startBtn = new Button { Text = "Start", Width = 220, Height = 40 };
-        startBtn.Click += (_, _) => ChangeScene(UIScene.Playing);
+        startBtn.Click += (_, _) => {ChangeScene(UIScene.Playing); GameStarted = true;};
         panel.AddChild(startBtn);
 
         var optionsBtn = new Button { Text = "Options", Width = 220, Height = 40 };
@@ -93,6 +95,8 @@ public class GumUIManager
         var quitBtn = new Button { Text = "Quit", Width = 220, Height = 40 };
         quitBtn.Click += (_, _) => _onExitGame?.Invoke();
         panel.AddChild(quitBtn);
+
+        SetButtonColors(panel, Color.DimGray);
 
         return panel;
     }
@@ -113,15 +117,17 @@ public class GumUIManager
         panel.AddChild(optionsBtn);
 
         var mainMenuBtn = new Button { Text = "Quit to Main Menu", Width = 220, Height = 40 };
-        mainMenuBtn.Click += (_, _) => ChangeScene(UIScene.StartMenu);
+        mainMenuBtn.Click += (_, _) => {ChangeScene(UIScene.StartMenu); GameStarted = false;};
         panel.AddChild(mainMenuBtn);
+
+        SetButtonColors(panel, Color.DimGray);
 
         return panel;
     }
 
     private FrameworkElement BuildOptionsMenu()
     {
-        var panel = CreateCenteredColumnPanel();
+        StackPanel panel = CreateCenteredColumnPanel();
 
         var title = new Label { Text = "KEYBINDINGS (Click to Rebind)" };
         panel.AddChild(title);
@@ -139,7 +145,7 @@ public class GumUIManager
 
         foreach (KeyAction action in Enum.GetValues<KeyAction>())
         {
-            if (action == KeyAction.Exit) continue; // keep Escape reserved for menu navigation
+            if (action == KeyAction.Menu) continue; // keep Escape reserved for menu navigation
 
             var bindBtn = new Button
             {
@@ -158,12 +164,14 @@ public class GumUIManager
         backBtn.Click += (_, _) => ChangeScene(_previousScene);
         panel.AddChild(backBtn);
 
+        SetButtonColors(panel,Color.DimGray);
+
         return panel;
     }
 
     private StackPanel CreateCenteredColumnPanel()
     {
-        var panel = new StackPanel
+        StackPanel panel = new StackPanel
         {
             Spacing = 12
         };
@@ -193,7 +201,6 @@ public class GumUIManager
 
     public void Update(GameTime gameTime, InputManager inputManager)
     {
-        // 1. If we are waiting for the user to press a new key in the Options menu, intercept it first
         if (CurrentScene == UIScene.OptionsMenu && _actionWaitingForRebind.HasValue)
         {
             if (TryCaptureNewBinding(inputManager))
@@ -203,8 +210,7 @@ public class GumUIManager
             }
         }
 
-        // 2. Toggle Escape Menu when Escape is pressed
-        if (_playerInput.IsNewPress(KeyAction.Exit))
+        if (_playerInput.IsNewPress(KeyAction.Menu))
         {
             if (CurrentScene == UIScene.Playing)
                 ChangeScene(UIScene.EscapeMenu);
@@ -214,7 +220,6 @@ public class GumUIManager
                 ChangeScene(_previousScene);
         }
 
-        // 3. Update Gum UI
         GumService.Default.Update(gameTime);
     }
 
@@ -269,6 +274,27 @@ public class GumUIManager
         _actionWaitingForRebind = null;
         _buttonWaitingForRebind = null;
     }
+
+
+    private void SetButtonColors(Panel panel, Color c)
+    {
+        foreach (var child in panel.Visual.Children)
+        {
+            if (child is ButtonVisual buttonVisual)
+            {
+                buttonVisual.BackgroundColor = c;
+                
+                if (buttonVisual.FormsControlAsObject is Button button)
+                {
+                    button.UpdateState();
+                }
+            }
+        }
+    }
+
+
+
+
 
     public void Draw()
     {

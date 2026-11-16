@@ -137,7 +137,7 @@ internal sealed class GameplayState : IDisposable
         DrawBackground(spriteBatch);
 
 
-        if (_gumUIManager.CurrentScene != UIScene.StartMenu)
+        if (_gumUIManager.GameStarted)
         {
 
             spriteBatch.Begin(
