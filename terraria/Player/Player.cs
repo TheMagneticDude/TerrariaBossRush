@@ -65,11 +65,18 @@ public class Player : IPlayer
     // Weapon stuff.
     private IWeapon _equippedWeapon;
     private readonly HealthComponent _health = new HealthComponent(TerrariaStats.PlayerHealth);
+    private readonly ManaComponent _mana = new ManaComponent(TerrariaStats.PlayerMana);
+    private readonly PlayerBuffs _buffs = new PlayerBuffs();
 
     public int CurrentHealth => _health.CurrentHealth;
     public int MaxHealth => _health.MaxHealth;
+
+    public int CurrentMana => _mana.CurrentMana;
+    public int MaxMana => _mana.MaxMana;
     public bool IsDead => _health.IsDead;
     public Player(TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
+    public bool HasSwiftness => _buffs.HasSwiftness;
+    public Player(AnimatedSprite sprite, TextureAtlas atlas, PlayerHotbar hotbar, PlayerInput input)
     {
         ArgumentNullException.ThrowIfNull(input);
         _atlas = atlas;
@@ -115,6 +122,7 @@ public class Player : IPlayer
     public void SetBlockContactEffect(PlayerMovementEffects effect)
     {
         _blockContactEffect = effect;
+        
     }
 
     private void ApplyBlockContactEffect()
@@ -143,6 +151,15 @@ public class Player : IPlayer
     {
         _health.Heal(amount);
     }
+
+    public void RestoreMana(int amount)
+    {
+        _mana.RestoreMana(amount);
+    }
+    public bool UseMana(int amount)
+    {
+        return _mana.UseMana(amount);
+    }
     private void HandleHotbarInput()
     {
         for (int slot = 0; slot < Math.Min(10, _hotbar.Count); slot++)
@@ -166,19 +183,36 @@ public class Player : IPlayer
             _hotbar.SelectSlot(_hotbar.SelectedSlot + 1, this);
         }
 
-        if (Input.IsNewPress(KeyAction.UseItem))
+        if (Input.IsNewPress(KeyAction.UseItem) && _hotbar.SelectedEntry is ItemHotbarEntry)
         {
             _hotbar.UseSelected(this);
         }
     }
+
+    public void Swiftness(float duration)
+    {
+        _buffs.Swiftness(duration);
+    }
+    
 
     public void Update(GameTime gameTime)
     {
         ArgumentNullException.ThrowIfNull(gameTime);
 
         _health.Update(gameTime);
+        _buffs.Update(gameTime);
 
         HandleHealthInput();
+        if (Input.IsNewPress(KeyAction.Reset))
+        {
+            _health.Reset();
+            _mana.Reset();
+        }
+
+        if (Input.IsNewPress(KeyAction.TakeDamage))
+        {
+            TakeDamage(10);
+        }
 
         // Temporary death behavior to stop movement
         if (IsDead)
@@ -186,6 +220,7 @@ public class Player : IPlayer
             Velocity = Vector2.Zero;
             return;
         }
+
         HandleHotbarInput();
         HandleToggleDebugInput();
 
@@ -219,9 +254,20 @@ public class Player : IPlayer
     private void UpdateWeapon(GameTime gameTime)
     {
         if (_equippedWeapon != null && Input.IsNewPress(KeyAction.Attack))
+        if (_hotbar.SelectedEntry is WeaponHotbarEntry && _equippedWeapon != null 
+        && Input.IsNewPress(KeyAction.Attack))
         {
-            _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
-            _stateMachine.ChangeState(PlayerState.UseItem);
+            bool canAttack = !_equippedWeapon.IsAttacking;
+
+            if (canAttack && _equippedWeapon is IManaWeapon manaWeapon)
+            {
+                canAttack = UseMana(manaWeapon.ManaCost);
+            }
+            if (canAttack)
+            {
+                _equippedWeapon.Attack(Position, _facingRight, Input.GetCursorPos());
+                _stateMachine.ChangeState(PlayerState.UseItem);
+            }
         }
 
         if (_equippedWeapon != null)
@@ -255,7 +301,8 @@ public class Player : IPlayer
             (Input.IsPressed(KeyAction.MoveRight) ? 1f : 0f) -
             (Input.IsPressed(KeyAction.MoveLeft) ? 1f : 0f);
 
-        Velocity = new Vector2(componentX * _movementSpeed * (_isTouchingHoney ? _honeySpeedModifier : 1f), Velocity.Y);
+        Velocity = new Vector2(componentX * _movementSpeed * _buffs.MovementMultiplier *
+        (_isTouchingHoney ? _honeySpeedModifier : 1f), Velocity.Y);
 
         if (Velocity.X > 0)
         {

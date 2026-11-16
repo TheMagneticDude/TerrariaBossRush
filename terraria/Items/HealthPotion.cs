@@ -9,9 +9,11 @@ namespace terraria.Items;
 public class HealthPotion : IItem
 {
     private const float DisplayDuration = 0.5f;
+    private const float CooldownDuration = 10f;
 
-    private readonly Sprite _sprite;
-    private float _timer;
+    private readonly Texture2D _texture;
+    private float _displayTimer;
+    private float _cooldownTimer;
 
     private Vector2 _potPosition;
 
@@ -20,24 +22,32 @@ public class HealthPotion : IItem
         get { return "Health Potion"; }
     }
     public bool IsActive { get; private set; }
-
-   
-    public HealthPotion(TextureAtlas atlas)
+    public bool IsOnCooldown
     {
-        ArgumentNullException.ThrowIfNull(atlas);
-        _sprite = atlas.CreateSprite("healthPotion");
-        _sprite.CenterOrigin();
+        get { return _cooldownTimer > 0f; }
+    }
+
+    public HealthPotion(Texture2D texture)
+    {
+        ArgumentNullException.ThrowIfNull(texture);
+        _texture = texture;
         IsActive = false;
     }
 
     public void Use(IPlayer player)
     {
         ArgumentNullException.ThrowIfNull(player);
+
+        if (IsOnCooldown)
+        {
+            return;
+        }
         
         player.Heal(30);
 
         IsActive = true;
-        _timer = DisplayDuration;
+        _displayTimer = DisplayDuration;
+        _cooldownTimer = CooldownDuration;
     }
 
     public void Select(IPlayer player)
@@ -48,16 +58,26 @@ public class HealthPotion : IItem
     {
         ArgumentNullException.ThrowIfNull(gameTime);
         ArgumentNullException.ThrowIfNull(player);
-        if (!IsActive)
+
+        float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
+        if (IsActive)
         {
-            return;
+            _displayTimer -= elapsed;
+
+            if (_displayTimer <= 0f)
+            {
+                IsActive = false;
+            }
         }
-
-        _timer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
-
-        if (_timer <= 0f)
+        if (IsOnCooldown)
         {
-            IsActive = false;
+            _cooldownTimer -= elapsed;
+
+            if (_cooldownTimer < 0f)
+            {
+                _cooldownTimer = 0f;
+            }
         }
     }
 
@@ -79,11 +99,40 @@ public class HealthPotion : IItem
         {
             _potPosition = player.Position + new Vector2(-2, 22);
         }
-        _sprite.Draw(spriteBatch, _potPosition);
+        spriteBatch.Draw(
+            _texture,
+            _potPosition,
+            null,
+            Color.White,
+            0f,
+            new Vector2(_texture.Width / 2f, _texture.Height / 2f),
+            1f,
+            SpriteEffects.None,
+            0f
+        );
     }
 
     public void DrawIcon(SpriteBatch spriteBatch, Rectangle slot)
     {
-        _sprite.Draw(spriteBatch, new Vector2(slot.Center.X, slot.Center.Y));
+        ArgumentNullException.ThrowIfNull(spriteBatch);
+
+        spriteBatch.Draw(
+            _texture,
+            new Vector2(slot.Center.X, slot.Center.Y),
+            null,
+            Color.White,
+            0f,
+            new Vector2(_texture.Width / 2f, _texture.Height / 2f),
+            1f,
+            SpriteEffects.None,
+            0f
+        );
+    }
+    public float CooldownProgress
+    {
+        get
+        {
+            return _cooldownTimer / CooldownDuration;
+        }
     }
 }

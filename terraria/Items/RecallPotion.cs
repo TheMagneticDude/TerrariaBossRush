@@ -1,4 +1,6 @@
 using System;
+using System.Timers;
+
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary.Graphics;
@@ -9,13 +11,16 @@ namespace terraria.Items;
 public class RecallPotion: IItem
 {
     private const float DisplayDuration = 0.5f;
+    private const float CooldownDuration = 10f;
+
     private readonly Vector2 _recallLocation = new Vector2(200,450);
 
     private Vector2 _potPosition;
 
-    private readonly Sprite _sprite;
+    private readonly Texture2D _texture;
 
-    private float _timer;
+    private float _displayTimer;
+    private float _cooldownTimer;
 
     public string Name
     {
@@ -23,18 +28,29 @@ public class RecallPotion: IItem
     }
     public bool IsActive { get; private set; }
 
-    public RecallPotion(TextureAtlas atlas)
+    public bool IsOnCooldown
     {
-        ArgumentNullException.ThrowIfNull(atlas);
-        _sprite = atlas.CreateSprite("recallPotion");
-        _sprite.CenterOrigin();
+        get { return _cooldownTimer > 0f; }
+    }
+
+
+    public RecallPotion(Texture2D texture)
+    {
+        ArgumentNullException.ThrowIfNull(texture);
+        _texture = texture;
         IsActive = false;
     }
 
     public void Use(IPlayer player)
     {
+        if (IsOnCooldown)
+        {
+            return;
+        }
+
         IsActive = true;
-        _timer = DisplayDuration;
+        _displayTimer = DisplayDuration;
+        _cooldownTimer = CooldownDuration;
     }
 
     public void Select(IPlayer player)
@@ -45,11 +61,14 @@ public class RecallPotion: IItem
     {
         ArgumentNullException.ThrowIfNull(gameTime);
         ArgumentNullException.ThrowIfNull(player);
+
+        float elapsed = (float)gameTime.ElapsedGameTime.TotalSeconds;
+
         if (IsActive)
         {
-            _timer -= (float)gameTime.ElapsedGameTime.TotalSeconds;
+            _displayTimer -= elapsed;
 
-            if (_timer <= 0)
+            if (_displayTimer <= 0)
             {
                 player.Position = _recallLocation;
                 player.Velocity = Vector2.Zero;
@@ -57,6 +76,15 @@ public class RecallPotion: IItem
                 IsActive = false;
             }
 
+        }
+        if (IsOnCooldown)
+        {
+            _cooldownTimer -= elapsed;
+
+            if (_cooldownTimer < 0f)
+            {
+                _cooldownTimer = 0f;
+            }
         }
     }
     public void Draw(SpriteBatch spriteBatch, IPlayer player)
@@ -73,13 +101,42 @@ public class RecallPotion: IItem
             {
                 _potPosition = player.Position + new Vector2(-1, 22);
             }
-            _sprite.Draw(spriteBatch, _potPosition);
+            spriteBatch.Draw(
+                _texture,
+                _potPosition,
+                null,
+                Color.White,
+                0f,
+                new Vector2(_texture.Width / 2f, _texture.Height / 2f),
+                1f,
+                SpriteEffects.None,
+                0f
+            );
         }
     }
 
     public void DrawIcon(SpriteBatch spriteBatch, Rectangle slot)
     {       
-        _sprite.Draw(spriteBatch, new Vector2(slot.Center.X, slot.Center.Y));
+        ArgumentNullException.ThrowIfNull(spriteBatch);
+        
+        spriteBatch.Draw(
+            _texture,
+            new Vector2(slot.Center.X, slot.Center.Y),
+            null,
+            Color.White,
+            0f,
+            new Vector2(_texture.Width / 2f, _texture.Height / 2f),
+            1f,
+            SpriteEffects.None,
+            0f
+        );
+    }
+    public float CooldownProgress
+    {
+        get
+        {
+            return _cooldownTimer / CooldownDuration;
+        }
     }
 }
 

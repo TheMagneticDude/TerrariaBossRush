@@ -11,6 +11,11 @@ public class HotbarUI
     private Texture2D _background;
     private int _slotSize = 50;
     private int _spacing = 4;
+    private const int _border = 2;
+
+    private readonly Color _normalSlot = new Color(55, 85, 115, 180);
+    private readonly Color _selectedSlot = new Color(105, 140, 170, 220);
+    private readonly Color _slotBorder = new Color(120, 150, 175, 200);
 
     public HotbarUI()
     {
@@ -23,10 +28,7 @@ public class HotbarUI
 
         if (_background == null)
         {
-            _background = new Texture2D(
-                spriteBatch.GraphicsDevice,
-                1,
-                1);
+            _background = new Texture2D(spriteBatch.GraphicsDevice, 1, 1);
 
             _background.SetData(new[] { Color.White });
         }
@@ -39,16 +41,32 @@ public class HotbarUI
             
             Rectangle slot = new Rectangle(start + ii * (_slotSize + _spacing), y, _slotSize, _slotSize);
 
-            spriteBatch.Draw(_background, slot, Color.Gray);
+            bool isSelected = ii == hotBar.SelectedSlot;
 
-            if (ii == hotBar.SelectedSlot)
-            {
-                spriteBatch.Draw(_background, slot, Color.White * 0.4f);
-            }
+            Color slotColor = isSelected ? _selectedSlot : _normalSlot;
+
+            spriteBatch.Draw(_background, slot, slotColor);
 
             IHotbarEntry entry = hotBar.GetEntry(ii);
             entry.DrawIcon(spriteBatch, slot);
 
+            DrawBorder(spriteBatch, slot, _slotBorder);
+
         }
+    }
+
+    private void DrawBorder(SpriteBatch spriteBatch, Rectangle slot, Color color)
+    {
+        spriteBatch.Draw(_background,
+            new Rectangle(slot.X, slot.Y, slot.Width, _border), color);
+
+        spriteBatch.Draw(_background,
+            new Rectangle(slot.X, slot.Bottom - _border, slot.Width, _border), color);
+
+        spriteBatch.Draw(_background,
+            new Rectangle(slot.X, slot.Y, _border, slot.Height), color);
+
+        spriteBatch.Draw(_background,
+            new Rectangle(slot.Right - _border, slot.Y, _border, slot.Height), color);
     }
 }

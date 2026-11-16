@@ -70,7 +70,7 @@ public class EyeOfCthulhu: IBoss
 
         _sprite.CenterOrigin();
 
-        ChangeState(new CthulhuPhase1State(this));
+        ChangeState(new CthulhuNormalState(this));
     }
 
      public void SetAnimation(string animationName)

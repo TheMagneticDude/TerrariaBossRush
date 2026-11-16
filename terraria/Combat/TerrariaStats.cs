@@ -3,6 +3,8 @@ namespace terraria.Combat;
 public static class TerrariaStats
 {
     public const int PlayerHealth = 100;
+
+    public const int PlayerMana = 200;
     public const int BlueSlimeHealth = 25;
     public const int BlueSlimeContact = 7;
     public const int EyeHealth = 2800;
