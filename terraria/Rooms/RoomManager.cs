@@ -30,8 +30,8 @@ public class RoomManager
     private readonly string[] _roomFiles =
     {
         "SlimeRoom.csv",
-        "BeeRoom.csv",
-        "CthulhuRoom.csv"
+        "CthulhuRoom.csv",
+        "BeeRoom.csv"
     };
 
     private int _currRoom;
