@@ -46,4 +46,36 @@ public class BossManager
         Bosses.Clear();
     }
 
+    public int CurrentHealth
+    {
+        get
+        {
+            int total = 0;
+            foreach (IBoss boss in Bosses)
+            {
+                if (!boss.Health.IsDead)
+                {
+                    total += boss.Health.CurrentHealth;
+                }
+            }
+
+            return total;
+        }
+    }
+
+    public int MaxHealth
+    {
+        get
+        {
+            int total = 0;
+
+            foreach (IBoss boss in Bosses)
+            {
+                total += boss.Health.MaxHealth;
+            }
+
+            return total;
+        }
+    }
+
 }

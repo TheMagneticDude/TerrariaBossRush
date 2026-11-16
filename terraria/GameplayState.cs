@@ -158,7 +158,7 @@ internal sealed class GameplayState : IDisposable
             samplerState: SamplerState.PointClamp
             );
 
-            _uiManager.Draw(spriteBatch, _player1);
+            _uiManager.Draw(spriteBatch, _player1, _bossManager);
 
             spriteBatch.End();
         }

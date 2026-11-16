@@ -42,15 +42,14 @@ As of Sprint 3, this program includes three different boss levels that you can s
 | Previous Level | `F3` + `J` |
 
 | Menu | `Esc` |
-
-- Keybinds can be changed under Menu -> Options
-
+- These are the default controls, but Keybinds can be rebound under Menu -> Options
 
 - Run project from root with: dotnet run --project terraria
 
 ## Known Bugs
 - Bosses with large hitboxes and high velocity can clip through 1 wide walls  
 - Currently no way to add or change multibinds from UI 
+- 
 ## Extra Tools/Processes
 
 ## Credits
