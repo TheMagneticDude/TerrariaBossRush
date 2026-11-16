@@ -17,12 +17,12 @@ internal static class PlayerFactory
         [
             new WeaponHotbarEntry("Wooden Sword", WeaponFactory.Instance.CreateSword(), false),
             new WeaponHotbarEntry("Magic Dagger", WeaponFactory.Instance.CreateDagger(projectiles), false),
-            new WeaponHotbarEntry("Bow", WeaponFactory.Instance.CreateBow(projectiles), false),
+            new WeaponHotbarEntry("Fire Bow", WeaponFactory.Instance.CreateFireBow(projectiles), false),
             new ItemHotbarEntry("Health Potion", ItemFactory.Instance.CreateHealthPot()),
             new ItemHotbarEntry("Recall Potion", ItemFactory.Instance.CreateRecallPot()),
             new ItemHotbarEntry("Mana Potion", ItemFactory.Instance.CreateManaPot()),
             new ItemHotbarEntry("Swiftness Potion", ItemFactory.Instance.CreateSwiftPot()),
-            new WeaponHotbarEntry("Staff", WeaponFactory.Instance.CreateStaff(projectiles), false),
+            new WeaponHotbarEntry("Ice Staff", WeaponFactory.Instance.CreateFrostStaff(projectiles), false),
             new WeaponHotbarEntry("Yo-yo", WeaponFactory.Instance.CreateYoyo(), false),
             new WeaponHotbarEntry("Whip", WeaponFactory.Instance.CreateWhip(), false),
         ];
