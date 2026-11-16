@@ -126,6 +126,17 @@ public class GumUIManager
         var title = new Label { Text = "KEYBINDINGS (Click to Rebind)" };
         panel.AddChild(title);
 
+
+        var scrollViewer = new ScrollViewer();
+
+        scrollViewer.Width = 260;
+        scrollViewer.Height = 300;
+        panel.AddChild(scrollViewer);
+
+        scrollViewer.InnerPanel.StackSpacing = 2;//spacing in between buttons
+
+        
+
         foreach (KeyAction action in Enum.GetValues<KeyAction>())
         {
             if (action == KeyAction.Exit) continue; // keep Escape reserved for menu navigation
@@ -133,14 +144,14 @@ public class GumUIManager
             var bindBtn = new Button
             {
                 Text = $"{action}: {_playerInput.GetBindText(action)}",
-                Width = 280,
+                Width = 240,
                 Height = 34
             };
 
             bindBtn.Click += (_, _) => StartListeningForRebind(action, bindBtn);
 
             _keybindButtons[action] = bindBtn;
-            panel.AddChild(bindBtn);
+            scrollViewer.AddChild(bindBtn);
         }
 
         var backBtn = new Button { Text = "Back", Width = 220, Height = 40 };
