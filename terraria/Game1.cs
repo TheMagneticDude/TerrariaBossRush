@@ -20,14 +20,17 @@ public class Game1 : Core
         // Core.Initialize triggers LoadContent, so create the state first.
         _gameplay = new GameplayState(Exit);
         base.Initialize();
+
+
         blankTexture = new Texture2D(GraphicsDevice, 1, 1);
         DEBUG.LoadContent(GraphicsDevice, blankTexture);
+        IsMouseVisible = true;
     }
 
     protected override void LoadContent()
     {
         // Core assigns its GraphicsDevice after base.Initialize returns.
-        _gameplay.LoadContent(Content, Graphics.GraphicsDevice);
+        _gameplay.LoadContent(Content, Graphics.GraphicsDevice, this, Exit);
     }
 
     protected override void UnloadContent()
