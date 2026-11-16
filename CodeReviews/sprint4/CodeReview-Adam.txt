@@ -4,7 +4,7 @@ Author of the code review: Adam Rehan
 Date of the code review: 11/16/26
 Sprint number: 4
 Name of the .cs files being reviewed: RoomManager.cs
-Author of the .cs files being reviewed: Nathan Cheng
+Author of the .cs files being reviewed: Nathan Cheng, Anna Mansur
 Number of minutes taken to complete the review: 20 minutes
 Specific comments on code quality: 
 
@@ -23,7 +23,7 @@ Author of the code review: Adam Rehan
 Date of the code review: 11/16/26
 Sprint number: 4
 Name of the .cs file being reviewed: RoomManager.cs
-Author of the .cs file being reviewed: Nathan Cheng
+Author of the .cs file being reviewed: Nathan Cheng, Anna Mansur
 Number of minutes taken to complete the review: 10
 Specific comments on what is readable and what is not: 
     Most names are good, simple typos like PreviosRoom, maybe making e fully expanded to entity etc. Right now I'd handle the misplaced brace. Other than those few typos, class is very readable!
