@@ -38,8 +38,8 @@ As of Sprint 3, this program includes three different boss levels that you can s
 | Use Potions | Right Mouse Button |
 | Reset | `R` |
 | Show Hitboxes | `F3` + `G` |
-| Next Level | `K` |
-| Previous Level | `J` |
+| Next Level | `F3` + `K` |
+| Previous Level | `F3` + `J` |
 
 | Menu | `Esc` |
 
@@ -50,7 +50,7 @@ As of Sprint 3, this program includes three different boss levels that you can s
 
 ## Known Bugs
 - Bosses with large hitboxes and high velocity can clip through 1 wide walls  
-
+- Currently no way to add or change multibinds from UI 
 ## Extra Tools/Processes
 
 ## Credits
