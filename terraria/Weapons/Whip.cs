@@ -1,5 +1,8 @@
 using System;
+using System.Net.Mime;
+
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Graphics;
 using terraria.Collision;
 using terraria.Combat;
@@ -11,9 +14,10 @@ public sealed class Whip : TetherWeapon
     private const int SegmentCount = 12;
     private readonly Texture2D _segments;
 
-    public Whip(Texture2D texture, Texture2D segments) : base(texture, 0.45f, TerrariaStats.LeatherWhip)
+    public Whip(Texture2D texture, Texture2D segments, SoundEffect GETBACKTOWORK) : base(texture, 0.45f, TerrariaStats.LeatherWhip)
     {
         _segments = segments;
+        sfx = GETBACKTOWORK;
     }
 
     public override void UpdateHitbox(Vector2 position, bool facingRight)

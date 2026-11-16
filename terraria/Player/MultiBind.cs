@@ -1,3 +1,4 @@
+using System;
 using System.Collections.Generic;
 using Microsoft.Xna.Framework;
 
@@ -65,8 +66,11 @@ public class MultiBind
         if (slot < 0 || slot >= _triggers.Count) return "Unbound";
         TriggerKey t = _triggers[slot];
         
+        if(t.DeviceType == InputDeviceType.Mouse) return t.GetMouseButtonCode(t.MouseButtonCode);
         return t.KeyCode.ToString();
     }
+
+    
 
     public void Update(GameTime gameTime, InputManager inputs, float dasDelay)
     {

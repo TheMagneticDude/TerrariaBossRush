@@ -1,0 +1,26 @@
+Code Quality Review
+
+Author of the code review: Nathan Cheng
+Date of the code review: 11/16/26
+Sprint number: 4
+Name of the .cs files being reviewed: AimedWeapon.cs
+Author of the .cs files being reviewed: Adam Rehan
+Number of minutes taken to complete the review: 10 minutes
+Specific comments on code quality: 
+
+This abstract class is very well built as it allows several other weapons with similar functionality to share the same code in this case aiming.
+Adding another aimed weapon would be very simple, just extend the class and build on top of that.  
+A hypothetical change that will be implemented soon is currently the sfx object is declared within AimedWeapon.cs but it should realistically be moved under weapon.cs as all
+weapons should have a sound effect.  
+
+
+Code Readability Review
+
+Author of the code review: Nathan Cheng
+Date of the code review: 11/16/26
+Sprint number: 4
+Name of the .cs file being reviewed: AimedWeapon.cs
+Author of the .cs file being reviewed: Adam Rehan
+Number of minutes taken to complete the review: 10 minutes
+Specific comments on what is readable and what is not: 
+    Everything is clearly named and structured very well, very easy to follow and read.

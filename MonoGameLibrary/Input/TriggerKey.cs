@@ -1,5 +1,6 @@
 //format from old tetrio++ keybinds
 
+using System;
 using System.Collections.Concurrent;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
@@ -51,6 +52,8 @@ public class TriggerKey
         DasTimeMs = dasTimeMs;
     }
 
+    
+
 
     //gamepad constructor
     public TriggerKey(Buttons gamePadButton, bool useDAS = false, double dasTimeMs = 0.0)
@@ -77,6 +80,18 @@ public class TriggerKey
     {
         GamePadButtonCode = b;
     }
+
+    public string GetMouseButtonCode(MouseButton mb)=> mb switch
+    {
+        MouseButton.Left => "Left",
+        MouseButton.Middle => "Middle",
+        MouseButton.Right => "Right",
+        MouseButton.ScrollDown => "ScrollDown",
+        MouseButton.ScrollUp => "ScrollUp",
+        MouseButton.XButton1 => "Side Button 1",
+        MouseButton.XButton2 => "Side Button 2",
+        _ => "None"
+    };
 
     
     public void Update(GameTime gameTime, InputManager inputs)

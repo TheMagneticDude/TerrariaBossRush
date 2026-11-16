@@ -444,11 +444,11 @@ public class RoomManager
         {
             ResetRoom();
         }
-        else if (input.IsNewPress(KeyAction.NextRoom))
+        else if (input.IsPressed(KeyAction.TriggerDebug) && input.IsNewPress(KeyAction.NextRoom))
         {
                 NextRoom();
         }
-        else if (input.IsNewPress(KeyAction.PreviousRoom))
+        else if (input.IsPressed(KeyAction.TriggerDebug) && input.IsNewPress(KeyAction.PreviousRoom))
         {
             PreviosRoom();
         }

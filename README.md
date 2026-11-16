@@ -7,7 +7,7 @@
 - Adam Rehan
 - Jacob Su
 
-Github page: [CSE3902](https://github.com/TheMagneticDude/CSE3902.git)
+Github page: [CSE3902](https://github.com/TheMagneticDude/TerrariaBossRush.git)
 
 ## Summary
 
@@ -17,9 +17,7 @@ As of Sprint 2, this program includes a basic terraria guide character with move
 
 As of Sprint 3, this program includes three different boss levels that you can swap between with J and K. Hotbar UI has been added along with player, block, and boss collisions. The player and enemies can now take damage and die as well. Special blocks now exist and have functions like causing player damage or slowing the player down.
 
-As of Sprint 4, many different weapons have been added including a yoyo, a whip, two bows (one a flame bow), and two staffs which are magic weapons with different effects. The health bar and mana bar have been implemented along with updated UI for the hot bar and scrolling capabilities. A mana system has been implemented which works alongside the magic weapons. Mana and swiftness potions have been added along with UI for potion cooldowns and UI to show which buffs are active. Basic UI for health bars for bosses has been implemented too. There is now a starting game menu with options to start, resume, and quit the game along with an options section where you can rebind the keys.
-
-## Game Controls
+## Default Game Controls
 
 | Action | Keyboard / Mouse |
 | --- | --- |
@@ -39,20 +37,19 @@ As of Sprint 4, many different weapons have been added including a yoyo, a whip,
 | Swap to Frost Staff | `0`, Numpad `0` |
 | Use Potions | Right Mouse Button |
 | Reset | `R` |
-| Exit | `Q` or `Esc` |
 | Show Hitboxes | `F3` + `G` |
-| Next Level | `K` |
-| Previous Level | `J` |
+| Next Level | `F3` + `K` |
+| Previous Level | `F3` + `J` |
 
-- These are the default controls, but keys can be rebound in the options menu
+| Menu | `Esc` |
+- These are the default controls, but Keybinds can be rebound under Menu -> Options
 
 - Run project from root with: dotnet run --project terraria
 
 ## Known Bugs
-
-- Daggers appear oddly in hand
-- Mouse button names show up as none in keybinding menu
-
+- Bosses with large hitboxes and high velocity can clip through 1 wide walls  
+- Currently no way to add or change multibinds from UI 
+- 
 ## Extra Tools/Processes
 
 ## Credits

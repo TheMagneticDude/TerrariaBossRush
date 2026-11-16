@@ -3,6 +3,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using terraria.World;
 using terraria.Combat;
+using Microsoft.Xna.Framework.Audio;
 
 namespace terraria.Weapons;
 
@@ -10,6 +11,7 @@ public abstract class AimedWeapon : Weapon
 {
     protected Vector2 Direction = Vector2.UnitX;
     protected Vector2 Hand;
+    protected SoundEffect sfx = null;
 
     protected virtual float SpriteAngleOffset => 0f;
     protected virtual Vector2 GripOrigin => new Vector2(Texture.Width / 2f, Texture.Height / 2f);
@@ -26,6 +28,8 @@ public abstract class AimedWeapon : Weapon
         Vector2 handPosition = GetHandPosition(position, facingRight);
         Vector2 targetPosition = WorldHandler.PixelToWorldSpace(cursor.ToVector2());
         AttackToward(position, facingRight, targetPosition - handPosition);
+
+        if(sfx != null) sfx.Play();
     }
 
     private void AttackToward(Vector2 position, bool facingRight, Vector2 direction)
