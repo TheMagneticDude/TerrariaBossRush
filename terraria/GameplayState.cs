@@ -34,6 +34,7 @@ internal sealed class GameplayState : IDisposable
     private List<Texture2D> _backgroundTextures;
 
     private UIManager _uiManager;
+    private GumUIManager _gumUIManager;
     private Texture2D _statusEffectPixel;
     private StatusEffectVisuals _statusEffectVisuals;
     private CombatManager _combatManager;
@@ -50,7 +51,7 @@ internal sealed class GameplayState : IDisposable
         _p1Input = new PlayerInput(_inputManager);
     }
 
-    public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice)
+    public void LoadContent(ContentManager content, GraphicsDevice graphicsDevice, Game game, Action onExitGame)
     {
         LoadVisuals(content, graphicsDevice);
         LoadEntityTextures(content);
@@ -61,6 +62,9 @@ internal sealed class GameplayState : IDisposable
         StartMusic(content);
         _uiManager = new UIManager(content);
         InitializeRooms();
+
+        _gumUIManager = new GumUIManager(game, _p1Input, onExitGame);
+        _gumUIManager.Initialize();
     }
 
     private void LoadVisuals(ContentManager content, GraphicsDevice graphicsDevice)
@@ -109,20 +113,20 @@ internal sealed class GameplayState : IDisposable
         // Input should update before anything reads it.
         _inputManager.Update(gameTime);
         _p1Input.Update(gameTime);
-        _roomManager.Update(_p1Input, gameTime);
 
-        _bossManager.UpdateAll(gameTime, _player1.Position);
+        _gumUIManager.Update(gameTime,_inputManager);
 
-        // Player may spawn projectiles during this update.
-        _player1.Update(gameTime);
-        _combatManager.Update(gameTime, _player1, _bossManager.Bosses, _roomManager.WorldMesh);
+        if (!_gumUIManager.IsGamePaused)
+        {//only run updates when unpaused
+            _roomManager.Update(_p1Input, gameTime);
 
-        _worldHandler.Update(_player1.Position);
+            _bossManager.UpdateAll(gameTime, _player1.Position);
 
-        //exit handler
-        if (_p1Input.IsNewPress(KeyAction.Exit))
-        {
-            _exit();
+            // Player may spawn projectiles during this update.
+            _player1.Update(gameTime);
+            _combatManager.Update(gameTime, _player1, _bossManager.Bosses, _roomManager.WorldMesh);
+
+            _worldHandler.Update(_player1.Position);
         }
     }
 
@@ -132,26 +136,33 @@ internal sealed class GameplayState : IDisposable
 
         DrawBackground(spriteBatch);
 
-        spriteBatch.Begin(
-            samplerState: SamplerState.PointClamp,
-            transformMatrix: _worldHandler.GetTransformMatrix()
-        );
 
-        _bossManager.DrawAll(spriteBatch, _statusEffectVisuals);
+        if (_gumUIManager.GameStarted)
+        {
 
-        _player1.Draw(spriteBatch);
-        _projectileManager.Draw(spriteBatch);
-        _roomManager.Draw(spriteBatch);
+            spriteBatch.Begin(
+                samplerState: SamplerState.PointClamp,
+                transformMatrix: _worldHandler.GetTransformMatrix()
+            );
 
-        spriteBatch.End();
+            _bossManager.DrawAll(spriteBatch, _statusEffectVisuals);
 
-        spriteBatch.Begin(
-        samplerState: SamplerState.PointClamp
-        );
+            _player1.Draw(spriteBatch);
+            _projectileManager.Draw(spriteBatch);
+            _roomManager.Draw(spriteBatch);
 
-        _uiManager.Draw(spriteBatch, _player1);
+            spriteBatch.End();
 
-        spriteBatch.End();
+            spriteBatch.Begin(
+            samplerState: SamplerState.PointClamp
+            );
+
+            _uiManager.Draw(spriteBatch, _player1);
+
+            spriteBatch.End();
+        }
+
+        _gumUIManager.Draw();
     }
 
     private void DrawBackground(SpriteBatch spriteBatch)

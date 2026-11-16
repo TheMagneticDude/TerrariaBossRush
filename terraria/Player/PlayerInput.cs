@@ -25,7 +25,7 @@ public enum KeyAction
     SelectSlot10,
     UseItem,
     TakeDamage,
-    Exit,
+    Menu,
     Reset,
     PreviousRoom,
     NextRoom,
@@ -65,7 +65,7 @@ public class PlayerInput
             { KeyAction.SelectSlot10, new MultiBind(new TriggerKey(Keys.D0), new TriggerKey(Keys.NumPad0)) },
             { KeyAction.UseItem, new MultiBind(new TriggerKey(MouseButton.Left)) },
             { KeyAction.TakeDamage, new MultiBind(new TriggerKey(Keys.E)) },
-            { KeyAction.Exit,      new MultiBind(new TriggerKey(Keys.Q), new TriggerKey(Keys.Escape)) },
+            { KeyAction.Menu,      new MultiBind(new TriggerKey(Keys.Escape)) },
             { KeyAction.Reset,     new MultiBind(new TriggerKey(Keys.R)) },
             { KeyAction.PreviousRoom, new MultiBind(new TriggerKey(Keys.J)) },
             { KeyAction.NextRoom, new MultiBind(new TriggerKey(Keys.K)) },
@@ -102,6 +102,19 @@ public class PlayerInput
     public Point GetCursorPos()
     {
         return Inputs.Mouse.Position;
+    }
+
+    public void RebindPrimary(KeyAction action, TriggerKey newKey)
+    {
+        if (KeyBinds.TryGetValue(action, out var group))
+        {
+            group.ReplaceKey(newKey, 0);
+        }
+    }
+
+    public string GetBindText(KeyAction action)
+    {
+        return KeyBinds.TryGetValue(action, out var group) ? group.GetBindingDisplayText(0) : "None";
     }
 
     
