@@ -142,7 +142,6 @@ public class GumUIManager
         scrollViewer.InnerPanel.StackSpacing = 2;//spacing in between buttons
 
         
-
         foreach (KeyAction action in Enum.GetValues<KeyAction>())
         {
             if (action == KeyAction.Menu) continue; // keep Escape reserved for menu navigation
@@ -201,6 +200,7 @@ public class GumUIManager
 
     public void Update(GameTime gameTime, InputManager inputManager)
     {
+        System.ArgumentNullException.ThrowIfNull(inputManager);
         if (CurrentScene == UIScene.OptionsMenu && _actionWaitingForRebind.HasValue)
         {
             if (TryCaptureNewBinding(inputManager))
@@ -231,7 +231,6 @@ public class GumUIManager
             CancelPendingRebind();
             return true;
         }
-
 
         Keys[] pressedKeys = inputManager.Keyboard.CurrentState.GetPressedKeys();
         foreach (Keys key in pressedKeys)
@@ -291,10 +290,6 @@ public class GumUIManager
             }
         }
     }
-
-
-
-
 
     public void Draw()
     {

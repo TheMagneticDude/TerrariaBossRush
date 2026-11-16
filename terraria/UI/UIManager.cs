@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using MonoGameLibrary.Graphics;
 
+using terraria.Bosses;
 using terraria.Players;
 
 namespace terraria.UI;
@@ -12,6 +13,7 @@ public class UIManager
 {
     private HotbarUI _hotbarUI;
     private HealthBar _healthBar;
+    private BossHealthBar _bossHealthBar;
 
     private ManaBar _manaBar;
     private BuffIcon _swiftnessIcon;
@@ -34,10 +36,11 @@ public class UIManager
 );
     }
 
-    public void Draw(SpriteBatch spriteBatch, IPlayer player)
+    public void Draw(SpriteBatch spriteBatch, IPlayer player, BossManager bossManager)
     {
         ArgumentNullException.ThrowIfNull(player);
         ArgumentNullException.ThrowIfNull(spriteBatch);
+        ArgumentNullException.ThrowIfNull(bossManager);
 
         if (_blankTexture == null)
         {
@@ -45,6 +48,8 @@ public class UIManager
                 spriteBatch.GraphicsDevice, 1, 1);
 
             _blankTexture.SetData(new[] { Color.White });
+
+            _bossHealthBar = new BossHealthBar(_blankTexture, new Vector2(390, 660));
         }
 
 
@@ -61,6 +66,13 @@ public class UIManager
         if (player.IsDead)
         {
             DeathOverlay.Draw(spriteBatch, _blankTexture);
+        }
+        if (bossManager.Bosses.Count > 0 && bossManager.CurrentHealth > 0)
+        {
+            _bossHealthBar.Draw(
+            spriteBatch,
+            bossManager.CurrentHealth,
+            bossManager.MaxHealth);
         }
     }
 

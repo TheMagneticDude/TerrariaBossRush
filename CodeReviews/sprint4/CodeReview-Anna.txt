@@ -1,0 +1,43 @@
+Code Quality Review
+
+Author of the code review: Anna Mansur
+Date of the code review: 11/16/26
+Sprint number: 4
+Name of the .cs files being reviewed: GumUIManager.cs
+Author of the .cs files being reviewed: Nathan Cheng
+Number of minutes taken to complete the review: 15
+Specific comments on code quality: 
+
+The quality of this code is good and the methods are simple and easy to understand
+and maintain. I think the cohesion is relatively high and all the methods are related
+to creating the menus. There is some coupling to other classes, but it is reasonable
+considering this is for UI which does need to interact with other classes. One thing that
+could be changed is that right now the manager handles the key rebinding and input detection
+while also managing the UI for the menus, which could be separated to prevent this class
+from getting too complicated in the future.
+ 
+
+A hypothetical change to make to the game related to file being reviewed 
+and how the current implementation could or could not easily support that change:
+
+If we wanted to add another option to the menu that took you to a screen that explains
+the game and what the different weapons and items do it would be pretty easy to implement 
+something like that. You would just have to add another framework element for that specific menu.
+
+Code Readability Review
+
+Author of the code review: Anna Mansur
+Date of the code review: 11/16/26
+Sprint number: 4
+Name of the .cs file being reviewed:  GumUIManager.cs
+Author of the .cs file being reviewed: 
+Number of minutes taken to complete the review: 5
+Specific comments on what is readable and what is not: 
+
+Overall the file is readable and easy to understand, one change could be to remove a few of the comments
+because some of them seem self explanatory.
+
+    
+   
+ 
+
