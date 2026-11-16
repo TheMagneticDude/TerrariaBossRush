@@ -60,6 +60,14 @@ public class MultiBind
         }
     }
 
+    public string GetBindingDisplayText(int slot = 0)
+    {
+        if (slot < 0 || slot >= _triggers.Count) return "Unbound";
+        TriggerKey t = _triggers[slot];
+        
+        return t.KeyCode.ToString();
+    }
+
     public void Update(GameTime gameTime, InputManager inputs, float dasDelay)
     {
         

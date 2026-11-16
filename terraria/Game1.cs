@@ -17,6 +17,9 @@ using terraria.Weapons;
 using terraria.World;
 using terraria.Rooms;
 using terraria.UI;
+using Gum.Forms;
+using Gum.Forms.Controls;
+
 using static terraria.Constants;
 
 namespace terraria;
@@ -47,6 +50,9 @@ public class Game1 : Core
     private CombatManager _combatManager;
     private RoomManager _roomManager;
 
+    //================UI===========================
+    private GumUIManager _gumUIManager;
+
     //================Projectiles===========================
     private readonly ProjectileManager _projectileManager = new ProjectileManager();
 
@@ -68,8 +74,14 @@ public class Game1 : Core
         // Core.Initialize triggers LoadContent in this project, so all fields
         // needed by LoadContent must be initialized before this call.
         base.Initialize();
+
+
         blankTexture = new Texture2D(GraphicsDevice, 1, 1);
         DEBUG.LoadContent(GraphicsDevice, blankTexture);
+
+        _gumUIManager = new GumUIManager(this, _p1Input, Exit);
+        _gumUIManager.Initialize();
+        IsMouseVisible = true;
     }
 
     protected override void LoadContent()
@@ -151,59 +163,72 @@ public class Game1 : Core
         // Input should update before anything reads it.
         _inputManager.Update(gameTime);
         _p1Input.Update(gameTime);
-        _roomManager.Update(_p1Input, gameTime);
+        
+        _gumUIManager.Update(gameTime,_inputManager);
 
-        _bossManager.UpdateAll(gameTime, _player1.Position);
+        if (!_gumUIManager.IsGamePaused)
+        {//only run updates when unpaused
+            _roomManager.Update(_p1Input, gameTime);
 
-        // Player may spawn projectiles during this update.
-        _player1.Update(gameTime);
-        _combatManager.Update(gameTime, _player1,_bossManager.Bosses, _roomManager.WorldMesh);
+            _bossManager.UpdateAll(gameTime, _player1.Position);
 
-        _worldHandler.Update(_player1.Position);
+            // Player may spawn projectiles during this update.
+            _player1.Update(gameTime);
+            _combatManager.Update(gameTime, _player1,_bossManager.Bosses, _roomManager.WorldMesh);
+
+            _worldHandler.Update(_player1.Position);
+
+            
+        }
 
         //exit handler
-        if (_p1Input.IsNewPress(KeyAction.Exit))
-        {
-            Exit();
-        }
+        // if (_p1Input.IsNewPress(KeyAction.Exit))
+        // {
+        //     Exit();
+        // }
     }
 
     protected override void Draw(GameTime gameTime)
     {
         GraphicsDevice.Clear(Color.CornflowerBlue);
 
-
         SpriteBatch.Begin(SpriteSortMode.Deferred, BlendState.AlphaBlend, SamplerState.LinearWrap, null, null, null, null);
-        // Draw using a source rectangle larger than the texture dimensions to trigger tiling
-        Rectangle destinationRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000);
-        Rectangle sourceRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000); 
+            // Draw using a source rectangle larger than the texture dimensions to trigger tiling
+            Rectangle destinationRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000);
+            Rectangle sourceRectangle = new Rectangle(-_backgroundTextures[_worldHandler.BackgroundID].Width, - (int) (_backgroundTextures[_worldHandler.BackgroundID].Height / 2f), 5000, 5000); 
 
-        SpriteBatch.Draw(_backgroundTextures[_worldHandler.BackgroundID], destinationRectangle, sourceRectangle, Color.White);
-        SpriteBatch.End();
+            SpriteBatch.Draw(_backgroundTextures[_worldHandler.BackgroundID], destinationRectangle, sourceRectangle, Color.White);
+            SpriteBatch.End();
 
-
-
-        SpriteBatch.Begin(
-            samplerState: SamplerState.PointClamp,
-            transformMatrix: _worldHandler.GetTransformMatrix()
-        );
+        if (_gumUIManager.CurrentScene != UIScene.StartMenu)
+        {
 
 
-        _bossManager.DrawAll(SpriteBatch, _statusEffectVisuals);
 
-        _player1.Draw(SpriteBatch);
-        _projectileManager.Draw(SpriteBatch);
-        _roomManager.Draw(SpriteBatch);
+            SpriteBatch.Begin(
+                samplerState: SamplerState.PointClamp,
+                transformMatrix: _worldHandler.GetTransformMatrix()
+            );
 
-        SpriteBatch.End();
 
-        SpriteBatch.Begin(
-        samplerState: SamplerState.PointClamp
-        );
+            _bossManager.DrawAll(SpriteBatch, _statusEffectVisuals);
 
-        _uiManager.Draw(SpriteBatch, _player1);
+            _player1.Draw(SpriteBatch);
+            _projectileManager.Draw(SpriteBatch);
+            _roomManager.Draw(SpriteBatch);
 
-        SpriteBatch.End();
+            SpriteBatch.End();
+
+            SpriteBatch.Begin(
+            samplerState: SamplerState.PointClamp
+            );
+
+            _uiManager.Draw(SpriteBatch, _player1);
+
+            SpriteBatch.End();
+        }
+
+        _gumUIManager.Draw();
 
         
 

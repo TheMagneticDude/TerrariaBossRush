@@ -104,6 +104,19 @@ public class PlayerInput
         return Inputs.Mouse.Position;
     }
 
+    public void RebindPrimary(KeyAction action, TriggerKey newKey)
+    {
+        if (KeyBinds.TryGetValue(action, out var group))
+        {
+            group.ReplaceKey(newKey, 0);
+        }
+    }
+
+    public string GetBindText(KeyAction action)
+    {
+        return KeyBinds.TryGetValue(action, out var group) ? group.GetBindingDisplayText(0) : "None";
+    }
+
     
 
     public void Update(GameTime gameTime)
