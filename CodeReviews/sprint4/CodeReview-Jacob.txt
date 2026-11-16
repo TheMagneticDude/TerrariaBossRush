@@ -1,0 +1,31 @@
+Code Quality and Readability Review
+
+Author of the code review: Jacob Su
+Date of the code review: 11/16/26
+Sprint number: 4
+Name of the .cs file being reviewed: GameplayState.cs
+File location: terraria/GameplayState.cs
+Author of the .cs file being reviewed: Adam Rehan, Nathan Cheng
+Number of minutes taken to complete the review: [Enter your actual review time]
+
+Specific comments on code quality:
+    GameplayState.cs moves the gameplay setup, updates and draws out of
+    Game1.cs. It also delegates the work to the player, room, combat, and UI managers,
+    which makes the main game class smaller and more readable. LoadVisuals, LoadEntityTextures,
+    and InitializeRooms also divide the initialization into steps which also makes it more readable.
+    Fuctionality wise, there is good functionality to the code and it is written well and easy to understand.
+
+A hypothetical change to make to the game related to the file being reviewed
+and how the current implementation could or could not easily support that change:
+    Maybe adding a Restart Run button to the pause menu could work since GameplayState already holds the managers for it.
+    However it would also need to reset or recreate the player,
+    restore the first room, and reset the camera. When a new player is created, separating this operation from LoadContent would allow
+    textures, menu controls, and keybindings to remain loaded while the
+    gameplay session restarts since calling LoadContent again would probably repeat
+    resource creation and menu initialization unnecessarily.
+
+Specific comments on code readability:
+    The code is very readable since method names such as LoadVisuals, InitializeRooms, and DrawBackground
+    make their purposes clear. The comments are also making the code more readable by explaining input order and
+    projectile creation and why they matter.
+    Adding more even spacing could probably help with readability as well.
