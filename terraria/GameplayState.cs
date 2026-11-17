@@ -109,13 +109,15 @@ internal sealed class GameplayState : IDisposable
 
     public void Update(GameTime gameTime)
     {
-        _music.Update();
+        
 
         // Input should update before anything reads it.
         _inputManager.Update(gameTime);
         _p1Input.Update(gameTime);
 
         _gumUIManager.Update(gameTime,_inputManager);
+
+        _music.Update(_gumUIManager.VolumeSetting);
 
         if (!_gumUIManager.IsGamePaused)
         {//only run updates when unpaused

@@ -10,6 +10,7 @@ using Gum.Forms.Controls;
 
 using static terraria.Constants;
 using Gum.Forms.DefaultVisuals.V3;
+using SharpCompress.Common;
 
 
 namespace terraria.UI;
@@ -30,6 +31,7 @@ public class GumUIManager
 
     public UIScene CurrentScene { get; private set; } = UIScene.StartMenu;
     public bool GameStarted {get;set;} = false;
+    public double VolumeSetting {get;set;} = 50;
     private UIScene _previousScene = UIScene.StartMenu;
 
     private FrameworkElement _startMenuRoot;
@@ -158,6 +160,24 @@ public class GumUIManager
             _keybindButtons[action] = bindBtn;
             scrollViewer.AddChild(bindBtn);
         }
+
+        var volumeSlider = new Slider();
+
+        panel.AddChild(volumeSlider);
+        //TODO: WILL ADD TO CONSTANTS LATERRRR
+        volumeSlider.Width = 250;
+
+        volumeSlider.Minimum = 0;
+        volumeSlider.Maximum = 100;
+        volumeSlider.Value = VolumeSetting;//start at 50
+        volumeSlider.IsMoveToPointEnabled = true;
+
+        //DEBUG:
+        volumeSlider.ValueChanged += (_, _) =>
+        {
+            VolumeSetting = volumeSlider.Value;
+            System.Diagnostics.Debug.WriteLine($"SliderVal: {volumeSlider.Value}");
+        };
 
         var backBtn = new Button { Text = "Back", Width = 220, Height = 40 };
         backBtn.Click += (_, _) => ChangeScene(_previousScene);
