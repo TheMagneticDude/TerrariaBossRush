@@ -40,9 +40,9 @@ public class MusicPlayer : IMusic
         _playlist = playList;
     }
 
-    public void Update()
+    public void Update(double v)
     {
-        MediaPlayer.Volume = Volume;
+        MediaPlayer.Volume = (float) v / 100f;
         if (!Looping && MediaPlayer.State == MediaState.Stopped && _playlist.Count > 1)
         {
             NextSong();
