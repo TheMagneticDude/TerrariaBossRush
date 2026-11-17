@@ -137,7 +137,7 @@ public class GumUIManager
 
         var scrollViewer = new ScrollViewer();
 
-        scrollViewer.Width = 260;
+        scrollViewer.Width = 360;
         scrollViewer.Height = 300;
         panel.AddChild(scrollViewer);
 
@@ -151,7 +151,7 @@ public class GumUIManager
             var bindBtn = new Button
             {
                 Text = $"{action}: {_playerInput.GetBindText(action)}",
-                Width = 240,
+                Width = 360,
                 Height = 34
             };
 
@@ -161,11 +161,15 @@ public class GumUIManager
             scrollViewer.AddChild(bindBtn);
         }
 
+        var lable = new Label();
+        panel.AddChild(lable);
+        lable.Text = "Volume";
+
         var volumeSlider = new Slider();
 
         panel.AddChild(volumeSlider);
         //TODO: WILL ADD TO CONSTANTS LATERRRR
-        volumeSlider.Width = 250;
+        volumeSlider.Width = 360;
 
         volumeSlider.Minimum = 0;
         volumeSlider.Maximum = 100;
@@ -179,7 +183,7 @@ public class GumUIManager
             System.Diagnostics.Debug.WriteLine($"SliderVal: {volumeSlider.Value}");
         };
 
-        var backBtn = new Button { Text = "Back", Width = 220, Height = 40 };
+        var backBtn = new Button { Text = "Back", Width = 360, Height = 40 };
         backBtn.Click += (_, _) => ChangeScene(_previousScene);
         panel.AddChild(backBtn);
 
